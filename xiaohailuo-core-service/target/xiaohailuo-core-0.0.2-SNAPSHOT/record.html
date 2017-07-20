@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>录音条目</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/json.js"></script>
+    <script src="js/common.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="css/weixinAudio.css" type="text/css">
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+
+        .img-content{
+            display: block;
+            width: 100%;
+            height: 220px;
+            text-align: center;
+        }
+        .img-content img{
+            width: 100%;
+            height: 220px;
+        }
+    </style>
+</head>
+<body style="margin: 4px">
+
+<div id="myCarousel" class="carousel slide" style="">
+    <!-- 轮播（Carousel）指标 -->
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    </ol>
+    <!-- 轮播（Carousel）项目 -->
+    <div class="carousel-inner img-content" >
+        <div class="item active">
+            <img src="img/dujingyan.jpg" alt="First slide">
+            <div class="carousel-caption">都江堰</div>
+        </div>
+    </div>
+    <!-- 轮播（Carousel）导航 -->
+    <a class="carousel-control left" href="#myCarousel"
+       data-slide="prev">&lsaquo;</a>
+    <a class="carousel-control right" href="#myCarousel"
+       data-slide="next">&rsaquo;</a>
+</div>
+
+</body>
+</html>

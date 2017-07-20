@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>义卖签到</title>
+    <link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.min.css">
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/json.js"></script>
+</head>
+
+<body style="font-size: 35px">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     style="margin-top: 300px">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h2 class="modal-title" id="myModalLabel">
+                    签到
+                </h2>
+            </div>
+            <div class="modal-body">
+                <input width="100%" placeholder="请输入UM账号" id="txtUM" style="border: 0px"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="processClose();"
+                        style="font-size: 35px;">关闭
+                </button>
+                <button type="button" class="btn btn-primary" onclick="processUM();" style="font-size: 35px;">
+                    提交
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     style="margin-top: 400px">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p id="submitNotice">签到成功，继续加油吧！</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="processClose();"
+                        style="font-size: 35px;">关闭
+                </button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+<script type="text/javascript">
+    debugger;
+    var um = localStorage.um;
+    if (um == undefined || um == "") {
+        $('#myModal').modal({
+            backdrop: 'static'
+        });
+    }
+    var areaId = getQueryStringByName('areaId');
+    if (um != undefined && um != "" && areaId != undefined && areaId != "") {
+        submitSignIn(um, areaId);
+    }
+    //根据名称取查询值
+    function getQueryStringByName(name) {
+        var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+        if (result == null || result.length < 1) {
+            return "";
+        }
+        return result[1];
+    }
+    //提交签到
+    function submitSignIn(um, areaId) {
+
+
+        var data = JSON.stringify({
+            "rid": "" + areaId + "","um": "" + um + ""
+        });
+
+        $.ajax({
+            url: baseUrl + signInUrl,
+            type: "POST",
+            async: false,
+            data: data,
+            dataType: "json",
+            contentType: 'application/json; charset=UTF-8',
+            cache: false,
+            success: function (data) {
+                if (data.resultCode == 200) {
+
+                    localStorage.userIcon = baseIconUrl + Math.floor((Math.random() * 26) + 1) + ".jpg";
+                    localStorage.userId = data.value.uid;
+
+                    $("#submitNotice")[0].innerHTML = "签到成功，继续加油吧！";
+                    $('#confirmModal').modal({
+                        backdrop: 'static'
+                    });
+
+                } else if (data.resultCode == 210) {
+                    localStorage.userIcon = baseIconUrl + Math.floor((Math.random() * 26) + 1) + ".jpg";
+                    localStorage.userId = data.value.uid;
+                    $("#submitNotice")[0].innerHTML = "这里你已经来过了，继续下一站吧！";
+                    $('#confirmModal').modal({
+                        backdrop: 'static'
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#submitNotice")[0].innerHTML = "系统故障，请稍后再试";
+                $('#confirmModal').modal({
+                    backdrop: 'static'
+                });
+            }
+        });
+    }
+    function processUM() {
+        $('#myModal').modal("hide");
+        um = $("#txtUM")[0].value;
+        localStorage.um = um;
+        localStorage.uname="敬大雁";
+
+        if (um != undefined && um != "" && areaId != undefined && areaId != "") {
+            submitSignIn(um, areaId);
+        }
+    }
+    function processClose() {
+        location.href = "index.html"
+    }
+</script>
+
+</body>
+</html>

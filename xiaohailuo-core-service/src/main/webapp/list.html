@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>录音条目</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="js/wx.js"></script>
+<!--    <script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+
+    <style type="text/css">
+        table {
+            vertical-align: middle;
+            font-size: 14px;
+            line-height: 18px;
+            width: 100%;
+            padding-right: 10px;
+            margin-top: 8px;
+        }
+
+        .recordDate {
+            width: 50px;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="css/weixinAudio.css" type="text/css">
+    <link rel="stylesheet" href="css/list.css" type="text/css">
+</head>
+<body>
+<div>
+    <div id="record">
+        <div class="brief">简介</div>
+        <div class="scen"><img :src="value[0].icon"></div>
+        <table v-for="record in value">
+            <tr>
+                <td class="recordDate">{{record.recordDate|recordMonth}}月</td>
+                <td rowspan="2"> {{record.description}}</td>
+            </tr>
+            <tr>
+                <td class="recordDate">{{record.recordDate|recordDay}}日</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="height: 40px; display: block;  " colspan="2">
+                    <p class="weixinAudio" style="margin-top: 0px">
+                        <audio :src="record.recordFile" id="media" width="1" height="1" preload="none"></audio>
+                            <span id="audio_area" class="db audio_area">
+                                <span class="audio_wrp db">
+                                    <span class="audio_play_area">
+                                        <i class="icon_audio_default"></i>
+				                        <i class="icon_audio_playing"></i>
+                                    </span>
+                            <span id="audio_length" class="audio_length tips_global"></span>
+                            <span class="db audio_info_area">
+                            </span>
+                            <span id="audio_progress" class="progress_bar" style="width: 0%;"></span>
+                            </span>
+                            </span>
+                    </p>
+
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="height: 30px; margin-top: 5px;  display: block;text-align: right; letter-spacing: 1px"
+                    colspan="2">
+                    <img src="img/like.png" @click="like(record.id)"/>{{record.likeCount}}
+                    <img src="img/comment.png" @click="comment(record.id)"/>{{record.replyCount}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+
+<script src="js/weixinAudio.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/list.js" type="application/javascript"></script>
+<script>
+
+</script>
+</body>
+</html>

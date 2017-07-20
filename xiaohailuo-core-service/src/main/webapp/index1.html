@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>小海螺</title>
+    <link rel="stylesheet" href="css/index.css"/>
+    <script type="text/javascript"
+            src="http://webapi.amap.com/maps?v=1.3&key=af0f0f64bdee1d1aab7baa5b8301c9fc&plugin=AMap.Geolocation,AMap.ToolBar,AMap.Geocoder,AMap.PlaceSearch,AMap.Autocomplete,AMap.Driving"></script>
+    <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/json.js"></script>
+    <link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.min.css">
+    <style>
+
+
+        #load {
+            position: relative;
+            -webkit-animation: circle 1s infinite linear;
+            width: 60px;
+            height: 60px;
+            display: none;
+        }
+
+        @-webkit-keyframes circle {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        #load2 {
+            position: absolute;
+            margin-top: -60px;
+            margin-left: -25px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class = 'info top' >
+</div>
+<div id="container"></div>
+<div id="list"></div>
+<div id="searchDiv">
+    <input id="tipinput" placeholder="请输入景点"/>
+</div>
+<div id="functionDiv">
+    <table>
+        <tr>
+            <td>
+                <input class="btn btn-default" type="button" id="markDownBtn" onclick="markDown()" value="标记">
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="recorder" draggable="true">
+    <img id="load" src="img/load_circle.png" draggable="true"/>
+    <img id="load2" src="img/play1.png" draggable="true"/>
+</div>
+<script type="text/javascript" src="js/index.wx.js">
+</script>
+<script type="text/javascript" src="js/index.js">
+</script>
+
+</body>
+</html>

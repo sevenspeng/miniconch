@@ -1,0 +1,19 @@
+.modal_button {
+	color: #FE612A;
+	padding-top: 10px;
+	width: 50%;
+	height: 40px;
+	
+	display: inline-block;
+	float: left;
+	text-align: center
+}
+.modal_button a{
+	color: #FE612A;
+}
+.modal_header{
+	text-align: center;
+	color: #333333;
+	font-size: 17px;
+	margin-bottom: 8px;
+}

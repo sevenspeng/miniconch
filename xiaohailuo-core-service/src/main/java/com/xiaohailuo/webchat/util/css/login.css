@@ -1,0 +1,62 @@
+.loginLogo {
+    display: block;
+    text-align: center;
+}
+
+.loginLogo img {
+    margin-top: 100px;
+    width: 500px;
+}
+
+.login-textFiled {
+    margin-top: 100px;
+}
+
+.telNo {
+    text-align: center;
+}
+
+.telNo img {
+    margin-top: 100px;
+    width: 60px;
+}
+
+.passWord {
+    text-align: center;
+}
+
+.passWord img {
+    margin-top: 100px;
+    width: 60px;
+}
+
+.telNo input {
+    width: 500px;
+    height: 80px;
+    /*display: inline-block;*/
+    font-size: 40px;
+    margin-left: 20px;
+    border-style: none none solid none;
+}
+
+.passWord input {
+    width: 500px;
+    height: 80px;
+    /*display: inline-block;*/
+    font-size: 40px;
+    margin-left: 20px;
+    border-style: none none solid none;
+}
+
+.submits {
+    margin-top: 100px;
+    text-align: center;
+}
+
+.submits input {
+    width: 210px;
+    height: 80px;
+    font-size: 40px;
+    border: solid #c0c0c0;
+    background-color: transparent;
+}

@@ -1,0 +1,48 @@
+{
+    "resultCode": 200,
+    "resultMessage": "接口调用正常返回",
+    "value": [
+        {
+            "id": "7aa603b9-c848-11e6-8c3d-782bcb20",
+            "title": "南桥",
+            "coordinates": null,
+            "lat": 30.996301,
+            "lng": 103.615974,
+            "isOfficial": "Y",
+            "uid": "0a6c3bbd-3d16-45eb-9f52-f758a962f327",
+            "summary": "南桥是南街与复兴街之间的一座雄伟壮丽的廊式古桥。\r\n若论人气，南桥应当不亚于都江堰水利工程内的任何一处。",
+            "icon": "http://cdn.sinacloud.net/xiaohailuo-db/img/%E5%8D%97%E6%A1%A5.jpg",
+            "recordFile": "http://cdn.sinacloud.net/xiaohailuo-db/audio/%E9%83%BD%E6%B1%9F%E5%A0%B0/%E5%8D%97%E6%A1%A5.wav",
+            "replyCount": 50,
+            "likeCount": 1000,
+            "description": "南桥是南街与复兴街之间的一座雄伟壮丽的廊式古桥。\r\n若论人气，南桥应当不亚于都江堰水利工程内的任何一处。南桥不仅有精致的门楼，桥梁更是修建得雄伟壮观，结构考究，桥上还有各种彩绘、雕梁画栋，令人赏心悦目。除此外，南桥上的小吃恐怕是其魅力所在，桥边河畔是条热闹的美食街，有各种小摊饭馆及化妆成卡通人物的艺人表演。",
+            "recordDate": "2016-12-23 11:35:51",
+            "poi": null,
+            "cityCode": null,
+            "url": "http://cdn.sinacloud.net/xiaohailuo-db/audio/%E9%83%BD%E6%B1%9F%E5%A0%B0/%E5%8D%97%E6%A1%A5.wav",
+            "timeLength": null,
+            "comments": null
+        },
+                {
+                    "id": "7aa603b9-c848-11e6-8c3d-782bcb2026c0",
+                    "title": "南桥",
+                    "coordinates": null,
+                    "lat": 30.996301,
+                    "lng": 103.615974,
+                    "isOfficial": "Y",
+                    "uid": "0a6c3bbd-3d16-45eb-9f52-f758a962f327",
+                    "summary": "落霞与孤鹜齐飞，秋水共长天一色。欢迎大家收听我的录音",
+                    "icon": "http://cdn.sinacloud.net/xiaohailuo-db/img/%E5%8D%97%E6%A1%A5.jpg",
+                    "recordFile": "http://cdn.sinacloud.net/xiaohailuo-db/audio/%E9%83%BD%E6%B1%9F%E5%A0%B0/%E5%8D%97%E6%A1%A5.wav",
+                    "replyCount": 20,
+                    "likeCount": 10,
+                    "description": "南桥是南街与复兴街之间的一座雄伟壮丽的廊式古桥。\r\n若论人气，南桥应当不亚于都江堰水利工程内的任何一处。南桥不仅有精致的门楼，桥梁更是修建得雄伟壮观，结构考究，桥上还有各种彩绘、雕梁画栋，令人赏心悦目。除此外，南桥上的小吃恐怕是其魅力所在，桥边河畔是条热闹的美食街，有各种小摊饭馆及化妆成卡通人物的艺人表演。",
+                    "recordDate": "2016-12-23 11:35:51",
+                    "poi": null,
+                    "cityCode": null,
+                    "url": "http://cdn.sinacloud.net/xiaohailuo-db/audio/%E9%83%BD%E6%B1%9F%E5%A0%B0/%E5%8D%97%E6%A1%A5.wav",
+                    "timeLength": null,
+                    "comments": null
+                }
+    ]
+}

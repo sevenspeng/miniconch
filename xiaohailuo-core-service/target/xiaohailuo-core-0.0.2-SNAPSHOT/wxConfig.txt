@@ -1,0 +1,10 @@
+{
+    "resultCode": 200,
+    "resultMessage": "接口调用正常返回",
+    "value": {
+        "appId": "wxa549b28c24cf341e",
+        "timestamp": "1414587457",
+        "nonceStr": "Wm3WZY_Pz0wz9cnW",
+        "signature": "0f9de62fce790f9a083d5c99e95740ceb90c27ed"
+    }
+}

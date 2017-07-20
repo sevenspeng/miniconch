@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.xiaohailuo</groupId>
+	<artifactId>xiaohailuo-core</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<!-- <packaging>jar</packaging> -->
+	<!-- add build war -->
+	<packaging>war</packaging>
+
+	<name>xiaohailuo-core-service</name>
+	<description>Xiaohailuo project for Spring Boot</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.0.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+	    <dependency>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-resources-plugin</artifactId>
+             <version>2.4.3</version>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- add Begin -->
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<!-- <version>5.1.21</version> -->
+		</dependency>
+		<!-- war begin -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- war end -->
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<!-- add End -->
+
+
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<version>4.3.6</version> <scope>test</scope> </dependency> -->
+		<!-- apache commons -->
+		<!-- <dependency> <groupId>commons-codec</groupId> <artifactId>commons-codec</artifactId> 
+			<version>1.7</version> </dependency> <dependency> <groupId>org.apache.commons</groupId> 
+			<artifactId>commons-lang3</artifactId> <version>3.1</version> </dependency> 
+			<dependency> <groupId>commons-beanutils</groupId> <artifactId>commons-beanutils</artifactId> 
+			<version>1.8.3</version> </dependency> <dependency> <groupId>commons-lang</groupId> 
+			<artifactId>commons-lang</artifactId> <version>2.6</version> </dependency> -->
+		<!-- Spring 文件上传的包 -->
+		<!-- <dependency> <groupId>commons-fileupload</groupId> <artifactId>commons-fileupload</artifactId> 
+			<version>1.2.2</version> </dependency> -->
+		<!-- Spring 文件上传的依赖包 -->
+		<!-- <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-io</artifactId> 
+			<version>1.3.2</version> </dependency> -->
+		<!-- SFTP上传 -->
+		<!-- <dependency> <groupId>com.jcraft</groupId> <artifactId>jsch</artifactId> 
+			<version>0.1.51</version> </dependency> -->
+		<!-- POI -->
+		<!-- <dependency> <groupId>org.apache.poi</groupId> <artifactId>poi</artifactId> 
+			<version>3.10-FINAL</version> </dependency> <dependency> <groupId>org.apache.poi</groupId> 
+			<artifactId>poi-ooxml</artifactId> <version>3.10-FINAL</version> </dependency> 
+			<dependency> <groupId>org.apache.poi</groupId> <artifactId>poi-ooxml-schemas</artifactId> 
+			<version>3.10-FINAL</version> </dependency> <dependency> <groupId>bsh</groupId> 
+			<artifactId>bsh</artifactId> <version>1.3.0</version> </dependency> -->
+
+		<!-- poi office -->
+		<!-- <dependency> <groupId>org.apache.poi</groupId> <artifactId>poi</artifactId> 
+			<version>3.10-FINAL</version> </dependency> <dependency> <groupId>org.apache.poi</groupId> 
+			<artifactId>poi-ooxml</artifactId> <version>3.10-FINAL</version> </dependency> 
+			<dependency> <groupId>org.apache.poi</groupId> <artifactId>poi-ooxml-schemas</artifactId> 
+			<version>3.10-FINAL</version> </dependency> -->
+		<!-- 上传Zip中文乱码问题,使用Java自带的解压Zip，如果有中文那么会出错 -->
+		<!-- <dependency> <groupId>org.apache.ant</groupId> <artifactId>ant</artifactId> 
+			<version>1.9.4</version> </dependency> -->
+
+		<!-- SpringBoot Cloud Begin -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
+		</dependency>
+		<!-- SpringBoot Cloud End -->
+
+		<dependency>
+			<groupId>org.BASE64Decoder</groupId>
+			<artifactId>sun.misc.BASE64Decoder</artifactId>
+			<version>1.0.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/sun.misc.BASE64Decoder.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.aliyun.oss</groupId>
+			<artifactId>aliyun-sdk-oss</artifactId>
+			<version>2.6.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/aliyun-sdk-oss-2.6.0.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>jdom-1.1</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/jdom-1.1.jar</systemPath>
+		</dependency>
+
+	</dependencies>
+
+	<!-- SpringBoot Cloud Begin -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Brixton.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- SpringBoot Cloud End -->
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>			
+			</plugin>
+			
+ 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webResources>
+						<resources>
+							<directory>${project.basedir}/src/main/resources/lib</directory>
+							<targetPath>WEB-INF/lib</targetPath>
+							<filtering>false</filtering>
+							<includes>
+								<include>*.jar</include>
+							</includes>
+							
+						</resources>
+					</webResources>
+				</configuration>
+				
+				
+			</plugin> 
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
+				<version>2.6</version> <configuration> <excludes> 打包时排除 配置文件 application.properties 
+				<exclude>**/application.properties</exclude> </excludes> </configuration> 
+				</plugin> -->
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>录音条目</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/vue.js"></script>
+    <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="js/wx.js"></script>
+
+    <link rel="stylesheet" href="css/weixinAudio.css" type="text/css">
+    <link rel="stylesheet" href="css/list.css" type="text/css">
+    <link rel="stylesheet" href="css/iconfont/iconfont.css">
+    <style>
+        .btn {
+            width: 70px;
+            height: 30px;
+            line-height: 30px;
+            background-color: #14A5EB;
+            color: #fff;
+            font-size: 14px;
+            font-family: Microsoft YaHei;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            border: none;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-right: 2px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div id="record">
+        <div class="brief">简介</div>
+        <div class="scen"><img :src="icon"></div>
+        <table style="width: 100%">
+            <tr>
+                <td style="background: #f4f4f4 none repeat scroll 0 0;margin: 2px;font: 13px/1.5 arial;width: 70%">
+                    {{description}}
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 40px; display: block;  ">
+                    <p class="weixinAudio" style="margin-top: 0px">
+                        <audio :src="recordFile" id="media" width="1" height="1" preload="none"></audio>
+                            <span id="audio_area" class="db audio_area">
+                                <span class="audio_wrp db">
+                                    <span class="audio_play_area">
+                                        <i class="icon_audio_default"></i>
+				                        <i class="icon_audio_playing"></i>
+                                    </span>
+                            <span id="audio_length" class="audio_length tips_global"></span>
+                            <span class="db audio_info_area">
+                            </span>
+                            <span id="audio_progress" class="progress_bar" style="width: 0%;"></span>
+                            </span>
+                            </span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td style="height: 30px; margin-top: 10px;  display: block;text-align: right; letter-spacing: 1px">
+                    <div style="margin-right: 20px;font: 12px/1.5 arial;"><img src="img/like.png" @click="like(id)"/>{{likeCount}}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-right: auto;margin-left: auto;"><input id="txtComment" type="text" placeholder="说点什么"
+                                                              style="width: 98%;line-height: 50px;border:1px,solid;">
+    </div>
+    <div style="display: block;width: 100%"><input type="button" value="发布" class="btn" onclick="comment()"></div>
+    <div id="recordComment">
+        <table v-for="comm in comments"
+               style="background-color:#f4f4f4;  margin: 2px;font: 13px/1.5 arial; width: 98%;margin-right: auto;margin-left: auto">
+            <tr>
+                <td style="width: 15%"> {{comm.title}}</td>
+                <td style="text-align: right">{{comm.date}}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    {{comm.comment}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+
+<script src="js/weixinAudio.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/list2.js" type="application/javascript"></script>
+
+<script>
+
+</script>
+</body>
+</html>

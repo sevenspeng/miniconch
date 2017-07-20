@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/recordDetail.css">
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/json.js"></script>
+
+
+</head>
+<body>
+
+
+<div class="mainDescri">
+    <div class="officialIcon">
+        <div class="officialPlay"><img class="officialPlayImg playBtn" src="img/play.png"/></div>
+    </div>
+    <div class="officialFlag">官</div>
+
+    <div id="officialDescri" class="officialDescri">
+    </div>
+</div>
+<div id="listContent">
+    <div class="mainBottom" style="vertical-align: middle">
+        <div style="border: 2px solid; height: 70px; border-radius: 20px; vertical-align: middle; margin-left: 10px; margin-top: 30px">
+            <img src="img/like2.png" onclick="like();" style="margin-top: 10px"/>
+            <div id="idLikeCount" class="officialLikeCount">0</div>
+        </div>
+        <div style="border: 2px solid; height: 70px; border-radius: 20px; vertical-align: middle; margin-left: 10px; margin-top: 30px">
+            <img src="img/comment2.png" style="margin-top: 20px"/>
+            <div class="officialCommentCount" style="height: 80px">0</div>
+        </div>
+    </div>
+    <div style="margin-top: 50px">
+        <input type="text" id = "txtComment"
+               style=" border:2px solid gray; border-right-style: none;width: 80%;height: 60px; font-size: 35px; margin-left: 10px;  border-radius: 15px 0px 0px 15px ;  display: inline"
+               placeholder="说点什么......"/>
+        <button type="button"  onclick="comment();"
+                style="border: none; margin-left: -20px; height: 66px; font-size: 35px; width: 15%; color: #FFFFFF; background-color: #0D9BF2; border-radius: 0px 15px 15px 0px ; ">
+            发布
+        </button>
+        <hr style="margin-left: 20px; margin-right: 20px; margin-top: 20px"/>
+    </div>
+
+
+</div>
+
+<audio id="hlAudio" autoplay="autoplay"></audio>
+<script src="js/recordDetail.js"></script>
+</body>
+
+</html>

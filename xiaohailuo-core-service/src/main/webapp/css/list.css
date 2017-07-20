@@ -1,0 +1,136 @@
+body{
+    margin: 4px;
+    padding: 0;
+
+}
+.scen{
+    text-align: center;
+}
+.scen img{
+    height: 200px;
+    width:100%;
+    border: 0px;
+}
+
+#circle button{
+    width: 150px;
+    height: 150px;
+    background:#cccccc;
+    -moz-border-radius: 75px;
+    -webkit-border-radius: 75px;
+    border-radius: 75px;
+    margin-top: 380px;
+    margin-left: 780px;
+    position:absolute;
+    z-index:1;
+}
+.brief{
+    width: 20px;
+    font-size: 30px;
+    margin-top: 130px;
+    margin-left: 320px;
+    position:absolute;
+    z-index:1;
+    font-weight:bold ;
+    color:white;
+}
+
+.comment1{
+    margin-top: 40px;
+}
+
+#contents{
+    width: 650px;
+    height: 500px;
+    margin-top: -500px;
+    margin-left: 60px;
+    display: none;
+}
+
+#contents img{
+    width: 720px;
+
+}
+
+#contents p{
+    font-size: 45px;
+    width: 600px;
+    color: white;
+    margin-top: -350px;
+    margin-left: 30px;
+}
+
+.month{
+   font-size: 15px;
+    margin-left: 40px;
+}
+
+.day{
+    font-size:25px;
+    margin-top: 10px;
+    margin-left: 40px;
+}
+
+.comments{
+    font-size: 14px;
+    margin-top: -80px;
+    margin-left: 80px;
+    letter-spacing: 2px;
+    line-height: 17px;
+}
+
+.voiceLenth{
+}
+
+.voiceNum{
+    margin-left: 130px;
+    font-size: 15px;
+    margin-top: 40px;
+}
+
+.voiceNum img{
+    height: 100px;
+}
+
+.userRecord{
+    font-size: 15px;
+   margin-left: 600px;
+}
+.userRecord img{
+    width:50px;
+}
+
+.line{
+    text-align: center;
+    width: 95%;
+    margin-top: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: solid 1px #ccc;
+}
+
+.mic{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 35px;
+}
+
+.mic img{
+    width: 120px;
+    height: 120px;
+}
+
+#m{
+    position: absolute;
+    margin-top: -150px;
+    margin-left: -60px;
+}
+
+#mc{
+    position: relative;
+    -webkit-animation: circle 1s infinite linear;
+    width: 155px;
+    height: 155px;
+    display: none;
+}

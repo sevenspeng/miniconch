@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>都江堰</title>
+    <link rel="stylesheet" href="css/detail.css">
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+    <style>
+
+
+        #load {
+            position: relative;
+            -webkit-animation: circle 1s infinite linear;
+            width: 155px;
+            height: 155px;
+            display: none;
+        }
+
+        @-webkit-keyframes circle {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        #load2 {
+
+            position: absolute;
+            margin-top: -150px;
+            margin-left: -60px;
+
+        }
+
+    </style>
+</head>
+<body scroll="no">
+
+<div class="bodyContent">
+    <div class="mainDescri">
+        <div class="officialIcon">
+            <div class="officialPlay"><img class="officialPlayImg playBtn" src="img/play.png"/></div>
+            <div class="officialFlag">官</div>
+        </div>
+
+
+        <div id="officialDescri" class="officialDescri">
+        </div>
+        <div class="mainBottom">
+            <a id="officalDetail" href="recordDetail.html"> <img src="img/comment.png"/></a>
+
+            <div class="officialCommentCount">111</div>
+            <img class="officalLikeImg" src="img/like.png"/>
+
+            <div class="officialLikeCount">1112653</div>
+        </div>
+    </div>
+    <div id="listContent">
+
+    </div>
+    <div class="recorder" draggable="true">
+        <img id="load" src="img/load_circle.png" draggable="true"/>
+        <img id="load2" src="img/microphone2.png" draggable="true"/>
+    </div>
+    <audio id="recorder" autoplay="autoplay"></audio>
+</div>
+<script src="js/detail.js"></script>
+<script src="js/HZRecorder.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>上传成功</title>
+    <style>
+        input {
+            text-align: center;
+            border: 1px solid;
+            overflow: hidden;
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+        }
+    </style>
+    <script src="js/jquery-2.1.4.min.js"></script>
+</head>
+<body style="text-align: center; ">
+<div style="font-size: 45px; width: 100%;margin-top: 100px;">上传成功</div>
+<div style="font-size: 35px; width: 100%;margin-top: 20px;"><label id="time">
+    10
+</label>s后自动跳转
+</div>
+<input type="button" style="font-size: 35px; margin-top: 40px;padding: 10px" value="立刻跳转" onclick="redirect()">
+</body>
+
+<script>
+    var ss = 10;
+    window.onload = function () {
+        setInterval("timer()", 1000)
+    };
+    function timer() {
+        if (ss > 0) {
+            ss = ss-1;
+            $("#time")[0].innerHTML = ss;
+        } else {
+            location.href = "index.html";
+        }
+
+    }
+
+    function redirect(){
+        location.href = "index.html";
+    }
+</script>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传录音</title>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        /*a  upload */
+        .a-upload {
+            height: 30px;
+            line-height: 30px;
+            width: 100px;
+            position: relative;
+            cursor: pointer;
+            color: #888;
+            border: 1px solid;
+            border-radius: 2px;
+            overflow: hidden;
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+            margin-top: 5px;
+            color: #111111;
+            text-decoration: none;
+        }
+
+        .a-upload input {
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+            cursor: pointer
+        }
+
+        .a-upload:hover {
+            color: #444;
+            background: #eee;
+            border-color: #ccc;
+            text-decoration: none
+        }
+
+        .imgContent {
+            display: block;
+            width: 98%;
+            margin-top: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            background-color: #f2f2f2;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .imgContent img {
+            height: 220px;
+        }
+
+        .comments {
+            display: block;
+            width: 98%;
+            margin: 10px auto 10px auto;
+            height: 100px;
+            border-radius: 10px;
+            background-color: #f2f2f2;
+            border: none;
+        }
+
+        #load {
+            -webkit-animation: circle 1s infinite linear;
+            animation: circle 1s infinite linear;
+            -moz-animation: circle 1s infinite linear;
+
+            width: 70px;
+            height: 70px;
+            position: relative;
+            margin-right: -70px;
+            display: none;
+        }
+
+        @keyframes circle {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @-webkit-keyframes circle {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(-360deg);
+            }
+        }
+        @-moz-keyframes circle {
+            0% {
+                -moz-transform: rotate(0deg);
+            }
+            100% {
+                -moz-transform: rotate(-360deg);
+            }
+        }
+
+        #load2 {
+            position: relative;
+
+        }
+
+        .recorder {
+            width: 100%;
+            text-align: center;
+            margin: 10px auto 40px auto;
+            display: block;
+        }
+
+        .recorder img {
+            width: 60px;
+            height: 60px;
+
+        }
+
+        .soundConet {
+            display: none;
+            margin: 10px auto 0px auto;
+            padding: 0px;
+            border: none;
+            text-align: left;
+
+        }
+
+        .soundConet img {
+            height: 50px;
+        }
+
+
+    </style>
+
+</head>
+<body style="text-align: center">
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+
+            <div class="imgContent">
+                <div id="preview"><img src="img/pictures.net.png"></div>
+                <div id="imgCommet" style="color: #c0c0c0;">上传照片，记录美好时光！</div>
+                <div id="submitPic">
+                    <a href="javascript:;" class="a-upload">
+                        <input type="file" onchange="PreviewImage(this)" id="upload">上传照片
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <textarea class="comments" rows="10"></textarea>
+
+            <div class="soundConet" onclick="playRecord()">
+                <img src="img/sound.png"><img src="img/sound2.png"><img id="sound3" src="img/sound3.png"
+                                                                        style="margin-left: -2px">
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="recorder" draggable="true">
+                <img id="load" src="img/load_circle.png"/>
+                <img id="load2" src="img/microphone.png"/>
+            </div>
+            <button type="button" class="btn btn-block btn-default btn-inverse"
+                    style=" width: 93%;margin-left: 3%; bottom: 1px"
+                    onclick="submitRecord()">提交
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery-2.1.4.min.js"></script>
+<link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.min.css">
+<script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script src="js/common.js"></script>
+<script src="js/wx.js"></script>
+<script src="js/addRecord.js"></script>
+</body>
+</html>
+

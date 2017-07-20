@@ -1,0 +1,139 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <title>小海螺</title>
+
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <script type="text/javascript"
+            src='https://webapi.amap.com/maps?v=1.3&plugin=AMap.Geolocation,AMap.ToolBar,AMap.Geocoder,AMap.PlaceSearch,AMap.Autocomplete,AMap&key=af0f0f64bdee1d1aab7baa5b8301c9fc'></script>
+    <!--引入UI组件库（1.0版本） -->
+    <script src="//webapi.amap.com/ui/1.0/main.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/common.js"></script>
+</head>
+<body>
+<div style="width:100%;height:100%;position:absolute;overflow:hidden">
+    <div class='wrap' style="width:200%;height:100%;position:absolute">
+        <div class='left'>
+            <div class='info top'>
+            </div>
+            <div id="container" class="map" tabindex="0"></div>
+            <div class='location start'>
+                <img src="./images/hotNew.png"/>
+
+                <div class='bottomright'>
+                    <div id='origin'>请输入景点</div>
+                </div>
+            </div>
+            <div id="markBtn" style="height: 35px;width: 70px; position: absolute;right:5px;
+             bottom: 20px;  border: solid 1px silver; text-align: center;   background-color: #f8f8f8;
+             line-height: 35px" onclick="markDown(this)">标记
+            </div>
+        </div>
+        <div class='right'>
+            <header class='title top'>
+                <a href='javascript:void(0)' id='back'>返回</a>
+
+                <div>景点搜索</div>
+            </header>
+            <div class='top' style='height:40px;'>
+                <div style='margin-top:2px'>
+                    <input id='search' value=''/>
+                </div>
+                <img id='searchButton' src="./images/search.gif"/>
+            </div>
+            <div id="searchResult"></div>
+        </div>
+        <div id='locating' style='display:none'>
+            <img src='./images/loading.gif'/>
+
+            <div>定位中,请稍候...</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var currentPosition = null;
+    // 创建地图
+    var map;
+    map = new AMap.Map('container', {
+        zoom: 17,
+        resizeEnable: true
+    });
+
+    map.on("complete", function (e) {
+        loadRecordMarkOfScreen();//根据屏幕对角线加载屏幕范围内的录音点
+        enableSearch(); //放开搜索
+        if (sessionStorage.currentPosition != undefined
+                && sessionStorage.currentPosition != null) {
+            var cp = sessionStorage.currentPosition;
+            map.setZoomAndCenter(14, [cp.split(',')[0], cp.split(',')[1]]);
+        }
+    });
+
+    map.on('moveend', function (e) {
+        loadRecordMarkOfScreen();//根据屏幕对角线加载屏幕范围内的录音点
+        sessionStorage.currentPosition=map.getCenter();
+    });
+    map.on('zoomchange', function (e) {
+        loadRecordMarkOfScreen();//根据屏幕对角线加载屏幕范围内的录音点
+        sessionStorage.currentPosition=map.getCenter();
+    });
+
+    // 給地图添加缩放工具条,默认显示在右下角
+    var toolBar = new AMap.ToolBar({
+        position: "LB",
+        ruler: false,
+        noIpLocate: true,
+        locate: true,
+        liteStyle: true
+    });
+    //    map.addControl(toolBar);
+
+    //起点（用户位置）的marker标记
+    var startMarker = null;
+    AMapUI.loadUI(['overlay/SimpleMarker'], function (SimpleMarker) {
+
+        //创建SimpleMarker实例
+        startMarker = new SimpleMarker({
+            //前景文字
+            iconLabel: 'R',
+            //背景图标样式
+            iconStyle: 'blue',
+            map: map,
+            position: map.getCenter(),
+            offset: new AMap.Pixel(-10, -32)
+        });
+        startMarker.hide();
+        startMarker.on('click', function (e) {
+            location.href = "addRecord.html?Lng=" + e.lnglat.getLng() + "&Lat=" + e.lnglat.getLat() + "";
+        });
+        startMarker.setMap(map);
+    });
+
+    var wrap = document.getElementsByClassName('wrap')[0];
+    //显示控制，执行后显示地图页面
+    var showLeftView = function () {
+        AMap.event.removeListener(placeSearch.listElementClickHandler);
+        AMap.event.removeListener(autoComplete.selectHandler);
+        placeSearch.clear();
+        wrap.className = 'wrap';
+        //保存当前地图中心点
+        sessionStorage.currentPosition = map.getCenter();
+    }
+    //显示控制，执行后显示搜索页面
+    var showRightView = function (onShowed) {
+        wrap.className = 'wrap rightShow';
+    }
+    //点击返回，页面由搜索页面返回显示页面
+    AMap.event.addDomListener(document.getElementById('back'), 'click', showLeftView);
+
+</script>
+
+<script type="text/javascript" src='./js/locate.js'></script>
+<script type="text/javascript" src='./js/search.js'></script>
+<script type="text/javascript" src='./js/marker.js'></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "resultCode": 200,
+  "resultMessage": "接口调用正常返回",
+  "value": {
+    "id": "11c64474-82d2-11e6-8c3d-782bcb2026c0",
+    "title": "服务治理组",
+    "coordinates": "(100.05,10.05)",
+    "lat": 100.05,
+    "lng": 10.05,
+    "isOfficial": "N",
+    "uid": "6A1EF6E34C6B4CA3B3EB838B7C576B3F",
+    "summary": "食品店",
+    "icon": "img/dujingyan.jpg",
+    "recordFile": "audio/m1.mp3",
+    "replyCount": 55,
+    "likeCount": 100,
+    "description": "团队口号：科技治理，服务平安 <br> 团队介绍：公共平台部门----服务治理组，基于对调用的管理实现对平安旗下服务的治理，以实现更智能的开放平台为目标，以构建新金融文明生态圈，开创互联网金融共赢新模式为愿景。",
+    "recordDate": null,
+    "poi": null,
+    "cityCode": null,
+    "url": null,
+    "timeLength": null,
+    "comments": [{
+                                     "uid": "90e93327e9654f7ea17f03d0ac53c5ca2",
+                                     "title": "丫丫",
+                                     "icon": null,
+                                     "date": "2015-05-01",
+                                     "comment": "还挺喜欢这个地方的~"
+                                 },{
+                                                                        "uid": "90e93327e9654f7ea17f03d0ac53c5ca2",
+                                                                        "title": "丫丫",
+                                                                        "icon": null,
+                                                                        "date": "2015-05-01",
+                                                                        "comment": "很好很好~"
+                                                                    }
+                                 ]
+  }
+}
