@@ -1,0 +1,19 @@
+
+系统用户名：root
+密码：Xiaohailuo@01
+
+弹性公网IP：123.56.14.105 (弹性)
+实例IP：172.17.0.1 (私有)
+
+Tomcat：
+
+
+http://123.56.14.105:8080/ 
+
+
+
+Mysql：
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('xiaohailuo');
+
+
+Prot：3306
