@@ -787,7 +787,6 @@ public class CoreController extends BaseController {
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
-
 		}
 		return map;
 	}
