@@ -33,6 +33,17 @@ public interface UserMapper {
     @Insert("INSERT INTO user(id, name, nickname, profilephoto, subscribetime,password) VALUES(#{id}, #{name}, #{nickname}, #{profilephoto}, sysdate(),#{password})")
     int insert(@Param("id") String id, @Param("name") String name,@Param("nickname") String nickname, @Param("profilephoto") String profilephoto,@Param("password") String password);
     
+    @Update("UPDATE user SET nickname=#{nickname} WHERE name=#{name}")
+    int updateNickName(User user);    
+    @Update("UPDATE user SET country=#{country},province=#{province},city=#{city} WHERE name=#{name}")
+    int updateOrigo(User user);    
+    @Update("UPDATE user SET image_url=#{image_url} WHERE name=#{name}")
+    int updateImageUrl(User user);
+    @Update("UPDATE user SET personnotes=#{personnotes} WHERE name=#{name}")
+    int updatePersonNotes(User user);
+    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},personnotes=#{personnotes} WHERE name=#{name} and id=#{id}")
+    int updateAllInfro(User user);
+
     /*@Results({
             @Result(property = "name", column = "name"),
             @Result(property = "age", column = "age")

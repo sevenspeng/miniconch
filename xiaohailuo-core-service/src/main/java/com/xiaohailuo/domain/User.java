@@ -8,12 +8,21 @@ public class User {
 	private String profilephoto;
 	private String summary;
 	private String gender;
-	private String subscribetim;
+	//private String subscribetim;
+	private String subscribetime;
+
 	private String qrcode;
 	private String address;
 	private String whatisup;
 	private String region;
 	private String password;
+	
+	private String image_url;
+	private String country;
+	private String province;
+	private String city;
+	private String personnotes;
+	private String lastupdatetime;	
 	
 	public String getPassword() {
 		return password;
@@ -57,12 +66,12 @@ public class User {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public String getSubscribetim() {
+	/*public String getSubscribetim() {
 		return subscribetim;
 	}
 	public void setSubscribetim(String subscribetim) {
 		this.subscribetim = subscribetim;
-	}
+	}*/
 	public String getQrcode() {
 		return qrcode;
 	}
@@ -88,10 +97,55 @@ public class User {
 		this.region = region;
 	}
 	
+	public String getSubscribetime() {
+		return subscribetime;
+	}
+	public void setSubscribetime(String subscribetime) {
+		this.subscribetime = subscribetime;
+	}
+		
+	public String getImage_url() {
+		return image_url;
+	}
+	public void setImage_url(String image_url) {
+		this.image_url = image_url;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}	
+	public String getPersonnotes() {
+		return personnotes;
+	}
+	public void setPersonnotes(String personnotes) {
+		this.personnotes = personnotes;
+	}
+	public String getLastupdatetime() {
+		return lastupdatetime;
+	}
+	public void setLastupdatetime(String lastupdatetime) {
+		this.lastupdatetime = lastupdatetime;
+	}
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", nickname=" + nickname + ", profilephoto=" + profilephoto
-				+ ", summary=" + summary + ", gender=" + gender + ", subscribetim=" + subscribetim + ", qrcode="
-				+ qrcode + ", address=" + address + ", whatisup=" + whatisup + ", region=" + region + "]";
+				+ ", summary=" + summary + ", gender=" + gender + ", subscribetime=" + subscribetime + ", qrcode="
+				+ qrcode + ", address=" + address + ", whatisup=" + whatisup + ", region=" + region 
+				+ ", image_url=" + image_url + ", country=" + country +", province=" + province+", city=" + city
+				+", personnotes=" + personnotes+", lastupdatetime=" + lastupdatetime+"]";
 	}
 }

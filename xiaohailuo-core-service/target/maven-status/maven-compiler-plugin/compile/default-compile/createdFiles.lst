@@ -23,6 +23,7 @@ com\xiaohailuo\domain\UserTestMapper.class
 com\xiaohailuo\common\util\SaveFile.class
 com\xiaohailuo\web\FileUploadController.class
 com\xiaohailuo\domain\WebChatInMapper.class
+com\xiaohailuo\util\LocationUtils.class
 com\xiaohailuo\webchat\util\UploadOss.class
 com\xiaohailuo\web\WebChatController.class
 com\xiaohailuo\webchat\service\WebChatInfo.class
@@ -33,9 +34,12 @@ com\xiaohailuo\bean\CommentInfo.class
 com\xiaohailuo\domain\RecordMapper.class
 com\xiaohailuo\webchat\service\MediaInWebChat.class
 com\xiaohailuo\domain\DBHeartbeat.class
+com\xiaohailuo\domain\FootprintMapper.class
 com\xiaohailuo\webchat\util\SHA1Utils.class
+com\xiaohailuo\util\MapUtils.class
 com\xiaohailuo\webchat\service\SignatureInWebChat$SingletonHolder.class
 com\xiaohailuo\domain\Record.class
+com\xiaohailuo\domain\Footprint.class
 com\xiaohailuo\web\BaseController.class
 com\xiaohailuo\domain\JointQueryMapper.class
 com\xiaohailuo\domain\Comment.class

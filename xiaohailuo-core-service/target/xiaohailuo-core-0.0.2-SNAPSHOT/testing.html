@@ -1,239 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head lang="zn_ch">
+<head lang="en">
     <meta charset="UTF-8">
-    <title>录音条目</title>
-    <meta name="viewport"
-          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
-    <link rel="stylesheet" href="css/list.css" type="text/css">
-    <script src="js/jquery-2.1.4.min.js" type="application/javascript"></script>
-    <script src="js/json.js"></script>
-    <script src="js/common.js"></script>
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <style type="text/css">
-        table {
-            vertical-align: middle;
-            font-size: 14px;
-            line-height: 18px;
-            width: 100%;
-            padding-right: 10px;
-            margin-top: 8px;
-        }
-
-        .recordDate {
-            width: 50px;
-            text-align: center;
-            font-size: 16px;
-        }
-    </style>
-
-    <style type="text/css">
-        html {
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-
-        .db {
-            display: block;
-        }
-
-        .weixinAudio {
-            line-height: 1.5;
-        }
-
-        .audio_area {
-            display: inline-block;
-            width: 100%;
-            vertical-align: top;
-            margin: 0px 1px 0px 0;
-            font-size: 0;
-            position: relative;
-            font-weight: 400;
-            text-decoration: none;
-            -ms-text-size-adjust: none;
-            -webkit-text-size-adjust: none;
-            text-size-adjust: none;
-        }
-
-        .audio_wrp {
-            border: 1px solid #ebebeb;
-            background-color: #fcfcfc;
-            overflow: hidden;
-            padding: 1px 1px 1px 1px;
-        }
-
-        .audio_play_area {
-            float: left;
-            margin: 9px 22px 10px 5px;
-            font-size: 0;
-            width: 18px;
-            height: 25px;
-        }
-
-        .playing .audio_play_area .icon_audio_default {
-            display: block;
-        }
-
-        .audio_play_area .icon_audio_default {
-            background: transparent url(img/iconloop.png) no-repeat 0 0;
-            width: 18px;
-            height: 25px;
-            vertical-align: middle;
-            display: inline-block;
-            -webkit-background-size: 54px 25px;
-            background-size: 54px 25px;
-            background-position: -36px center;
-        }
-
-        .audio_play_area .icon_audio_playing {
-            background: transparent url(img/iconloop.png) no-repeat 0 0;
-            width: 18px;
-            height: 25px;
-            vertical-align: middle;
-            display: inline-block;
-            -webkit-background-size: 54px 25px;
-            background-size: 54px 25px;
-            -webkit-animation: audio_playing 1s infinite;
-            background-position: 0px center;
-            display: none;
-        }
-
-        .audio_area .pic_audio_default {
-            display: none;
-            width: 18px;
-        }
-
-        .tips_global {
-            color: #8c8c8c;
-        }
-
-        .audio_area .audio_length {
-            float: right;
-            font-size: 14px;
-            margin-top: 3px;
-            margin-left: 1em;
-        }
-
-        .audio_info_area {
-            overflow: hidden;
-        }
-
-        .audio_area .audio_title {
-            font-weight: 400;
-            font-size: 17px;
-            margin-top: -2px;
-            margin-bottom: -3px;
-            width: auto;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            word-wrap: normal;
-        }
-
-        .audio_area .audio_source {
-            font-size: 14px;
-        }
-
-        .audio_area .progress_bar {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            background-color: #0cbb08;
-            height: 2px;
-        }
-
-        .playing .audio_play_area .icon_audio_default {
-            display: none;
-        }
-
-        .playing .audio_play_area .icon_audio_playing {
-            display: inline-block;
-        }
-
-        @-webkit-keyframes audio_playing {
-            30% {
-                background-position: 0px center;
-            }
-            31% {
-                background-position: -18px center;
-            }
-            61% {
-                background-position: -18px center;
-            }
-            61.5% {
-                background-position: -36px center;
-            }
-            100% {
-                background-position: -36px center;
-            }
-        }
-    </style>
-
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <title></title>
 </head>
+<script src="js/jquery-3.1.0.min.js"></script>
+
+<script type="text/javascript">window.onload = function () {
+    var input = document.getElementById("img_input");
+    var result = document.getElementById("result");
+    var img_area = document.getElementById("img_area");
+    if (typeof(FileReader) === 'undefined') {
+        result.innerHTML = "FileReader is not supported...";
+        input.setAttribute('disabled', 'disabled');
+    } else {
+        input.addEventListener('change', readFile, false);
+    }
+};
+
+function readFile() {
+    var file = this.files[0];
+    if (!/image\/\w+/.test(file.type)) {
+        alert("image only please.");
+        return false;
+    }
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (e) {
+        var img = new Image,
+                width = 640, //image resize
+                quality = 0.5, //image quality
+                canvas = document.createElement("canvas"),
+                drawer = canvas.getContext("2d");
+        img.src = this.result;
+        var img2=new Image;
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height =img.height ;
+            drawer.drawImage(img, 0, 0, canvas.width, canvas.height);
+            img2.src = canvas.toDataURL("image/jpeg", quality);
+            //console.log(img.src);
+           // result.innerHTML = '<img src="' + img.src + '" alt=""/>';
+            img_area.innerHTML = '<div class="sitetip">preview：</div><img src="' + img2.src + '" alt=""/>';
+        }
+    }
+}
+</script>
+<style type="text/css">
+    input {
+        margin: 10px 0;
+    }
+
+    textarea {
+        width: 100%;
+        height: 300px;
+    }
+</style>
 <body>
 
-<div class="brief">简介</div>
-<div class="scen"><img src="img/listTitleBg.jpg"></div>
-<div id="record">
-    <table v-for="record in value">
-        <tr>
-            <td class="recordDate">{{record.recordDate|recordMonth}}月</td>
-            <td rowspan="2"> {{record.summary}}</td>
-        </tr>
-        <tr>
-            <td class="recordDate">{{record.recordDate|recordDay}}日</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td style="height: 40px; display: block;  " colspan="2">
-                <!--           <audio controls="controls">
-                               <source :src="record.recordFile" type="audio/mpeg"/>
-                           </audio>-->
+<input type="file" value="image" id="img_input"/>
+<textarea id="result"></textarea>
 
-
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td style="height: 30px; display: block;text-align: right; letter-spacing: 1px" colspan="2">
-                <img src="img/like.png"/>{{record.replyCount}}
-                <img src="img/comment.png"/>{{record.likeCount}}
-            </td>
-        </tr>
-    </table></div>
-    <p class="weixinAudio" style="margin-top: 50px">
-        <audio src="audio/m1.mp3" id="media" width="1" height="1" preload></audio>
-                            <span id="audio_area" class="db audio_area">
-			<span class="audio_wrp db">
-			<span class="audio_play_area">
-				<i class="icon_audio_default"></i>
-				<i class="icon_audio_playing"></i>
-            </span>
-                            <span id="audio_length" class="audio_length tips_global">3:07</span>
-                            <span class="db audio_info_area">
-
-                            </span>
-                            <span id="audio_progress" class="progress_bar" style="width: 0%;"></span>
-                            </span>
-                            </span>
-    </p>
-
-<script src="js/list.js" type="application/javascript"></script>
-<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<script src="js/weixinAudio.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript">
-    // 修改了返回的对象,以前的无法接收
-    var weixinAudioObj = $('.weixinAudio').weixinAudio();
-   // 添加单一播放的逻辑
-     $('.weixinAudio').on('click', function (event) {
-     var $this = $(this);
-     var currentIndex = $this.index();
-     // 遍历所有对象，找到非当前点击，执行pause()方法;
-     $.each(weixinAudioObj, function (i, el) {
-     if (i != 'weixinAudio' + currentIndex) {
-     el.pause();
-     }
-     });
-     });
-</script>
+<p id="img_area"></p>
 </body>
 </html>

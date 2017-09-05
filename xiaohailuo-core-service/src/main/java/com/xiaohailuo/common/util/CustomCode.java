@@ -1,6 +1,7 @@
 package com.xiaohailuo.common.util;
 
 public class CustomCode {
+	/*
 	public static final int SC_CONTINUE = 100;
 	public static final int SC_SWITCHING_PROTOCOLS = 101;
 	public static final int SC_OK = 200;
@@ -41,6 +42,6 @@ public class CustomCode {
 	public static final int SC_BAD_GATEWAY = 502;
 	public static final int SC_SERVICE_UNAVAILABLE = 503;
 	public static final int SC_GATEWAY_TIMEOUT = 504;
-	public static final int SC_HTTP_VERSION_NOT_SUPPORTED = 505;
+	public static final int SC_HTTP_VERSION_NOT_SUPPORTED = 505;*/
 
 }

@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: xiaohailuo-core-service
 Implementation-Version: 0.0.2-SNAPSHOT
-Built-By: Administrator
+Built-By: duxitao
 Implementation-Vendor-Id: com.xiaohailuo
-Build-Jdk: 1.8.0_121
+Build-Jdk: 1.8.0_91
 Implementation-URL: http://projects.spring.io/spring-boot/xiaohailuo-c
  ore/
 Created-By: Maven Integration for Eclipse

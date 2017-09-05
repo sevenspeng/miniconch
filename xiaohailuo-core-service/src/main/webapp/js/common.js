@@ -30,10 +30,10 @@ var initRecordList=baseUrl + "core/query/record/list";
 var initWxConfigPath = baseUrl + "webchat/get/info/signature";
 
 //用户注册接口
-var SignIn = baseUrl + "core/user/register";
+var signIn = baseUrl + "core/user/register";
 
 //登录接口
-var login = baseUrl + "core/login";
+var loginURL = baseUrl + "core/login";
 
 //新增录音
 var addRecord = baseUrl + "core/add/record/position";

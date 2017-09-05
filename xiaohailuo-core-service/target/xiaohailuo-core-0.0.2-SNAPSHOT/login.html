@@ -1,43 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="title" content="登录小海螺">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.min.css">
-    <script src="js/jquery-3.1.0.min.js"></script>
-    <script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/json.js"></script>
+    <title>登陆页面</title>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link href="css/login.css" type="text/css" rel="stylesheet">
+    <link href="css/global.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/login.js"></script>
 </head>
-<body style="vertical-align: middle">
-<div class="container" style="vertical-align: middle; margin-top: auto">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <form class="form-horizontal" role="form">
-                <div class="form-group">
-                    <label for="intputTel" class="col-sm-2 control-label">手机号</label>
-                    <div class="col-sm-10">
-                        <input type="tel" min="9" class="form-control" id="intputTel" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputPassword" class="col-sm-2 control-label">密码</label>
-                    <div class="col-sm-10">
-                        <input type="password" min="1" class="form-control" id="inputPassword" />
-                    </div>
-                </div>
+<body>
+<div class="login">
+    <div class="login-title"><p>小海螺登录</p>
+        <i style="color: red;font-size: 10px;margin-top: 4px"></i>
+        <i style="color: red;font-size: 10px;margin-top: 60px"></i>
 
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" onclick="submitLogin()" class="btn btn-default">登录</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+    </div>
+    <div class="login-bar">
+        <ul>
+            <li><img src="images/login_user.png"><input type="text" class="mobile" placeholder="请输入手机号"/></li>
+            <li><img src="images/login_pwd.png"><input type="password" class="psd" placeholder="请输入确认密码"/></li>
+        </ul>
+    </div>
+
+    <div class="login-btn">
+        <div id="loginError" style="text-align: center; color: #f34541;display: none;margin-bottom: 10px">登录失败，用户名或密码错误</div>
+        <button class="submit" type="submit">登陆</button>
+        <a href="register.html">
+            <div class="login-reg"><p>没有账号，先注册</p></div>
+        </a>
     </div>
 </div>
-<script src="js/Login.js"></script>
+<div id="loading" style="z-index: 999;height: 100%;width: 100%"></div>
 </body>
 </html>
