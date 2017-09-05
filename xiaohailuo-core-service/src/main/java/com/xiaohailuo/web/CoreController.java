@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +30,8 @@ import com.xiaohailuo.bean.CoordinateScope;
 import com.xiaohailuo.bean.Like;
 import com.xiaohailuo.domain.Comment;
 import com.xiaohailuo.domain.CommentMapper;
+import com.xiaohailuo.domain.Footprint;
+import com.xiaohailuo.domain.FootprintMapper;
 import com.xiaohailuo.domain.JointQueryMapper;
 import com.xiaohailuo.domain.LikeMapper;
 import com.xiaohailuo.domain.Record;
@@ -35,6 +41,9 @@ import com.xiaohailuo.domain.SignMapper;
 import com.xiaohailuo.domain.User;
 import com.xiaohailuo.domain.UserMapper;
 import com.xiaohailuo.root.Root;
+import com.xiaohailuo.util.LocationUtils;
+import com.xiaohailuo.util.MapUtils;
+import com.xiaohailuo.util.SystemConst;
 import com.xiaohailuo.util.UUIDGenerator;
 import com.xiaohailuo.webchat.util.Base64ImgEncodeAndDecode;
 import com.xiaohailuo.webchat.util.UploadOss;
@@ -47,6 +56,8 @@ import Decoder.BASE64Decoder;
 @RequestMapping(value = "/core")
 // @Transactional
 public class CoreController extends BaseController {
+
+	Logger log = Logger.getLogger(CoreController.class);
 
 	@Autowired
 	private UserMapper userMapper;
@@ -65,6 +76,9 @@ public class CoreController extends BaseController {
 
 	@Autowired
 	private JointQueryMapper jointQueryMapper;
+
+	@Autowired
+	private FootprintMapper footprintMapper;
 
 	// status
 	// Map<String, Integer> statusMachine = new
@@ -93,32 +107,32 @@ public class CoreController extends BaseController {
 		 * map.put("resultCode", resultCode); map.put("resultMessage",
 		 * resultMessage); map.put("value", arrayList);
 		 */
-		
+
 		if (arrayList == null || arrayList.isEmpty()) {
 			resultCode = 210;
 			resultMessage = "未查询到符合条件的数据";
 		}
-		
-		for(int i=0;i<arrayList.size();i++){
-			    Record record = arrayList.get(i);
-				System.out.println("getRecordListByLatAndLng 遍历 第"+i+"条  原始record ：" + record);
 
-				System.out.println("getRecordListByLatAndLng 遍历 第"+i+"条  recordid ：" + record.getId());
-				List<CommentInfo> arrayCommentsList = jointQueryMapper.findCommentsByRid(record.getId());
-		
-				record.setComments(arrayCommentsList);
-				record.setReplyCount(arrayCommentsList.size());
-		
-				System.out.println("getRecordListByLatAndLng 遍历 第"+i+"条  comments ："  + arrayCommentsList.size());
-				int likeCount = likeMapper.findLikeCountByRid(record.getId());
-		
-				System.out.println("getRecordListByLatAndLng  遍历 第"+i+"条  likeCount ：" + likeCount);
-				record.setLikeCount(likeCount);
-		
-				System.out.println("getRecordListByLatAndLng  遍历 第"+i+"条 最终record ："+ record);
-				arrayList.set(i, record);
-		}		
-		
+		for (int i = 0; i < arrayList.size(); i++) {
+			Record record = arrayList.get(i);
+			System.out.println("getRecordListByLatAndLng 遍历 第" + i + "条  原始record ：" + record);
+
+			System.out.println("getRecordListByLatAndLng 遍历 第" + i + "条  recordid ：" + record.getId());
+			List<CommentInfo> arrayCommentsList = jointQueryMapper.findCommentsByRid(record.getId());
+
+			record.setComments(arrayCommentsList);
+			record.setReplyCount(arrayCommentsList.size());
+
+			System.out.println("getRecordListByLatAndLng 遍历 第" + i + "条  comments ：" + arrayCommentsList.size());
+			int likeCount = likeMapper.findLikeCountByRid(record.getId());
+
+			System.out.println("getRecordListByLatAndLng  遍历 第" + i + "条  likeCount ：" + likeCount);
+			record.setLikeCount(likeCount);
+
+			System.out.println("getRecordListByLatAndLng  遍历 第" + i + "条 最终record ：" + record);
+			arrayList.set(i, record);
+		}
+
 		System.out.println("classpath:" + CoreController.class.getClassLoader().getResource(""));
 		System.out.println("classpath:" + CoreController.class.getResource(""));
 		System.out.println("classpath:" + CoreController.class.getResource("/"));
@@ -350,7 +364,7 @@ public class CoreController extends BaseController {
 				System.out.println("uid==" + uid);
 			} else {
 				uid = UUID.randomUUID().toString();
-				int result1 = userMapper.insert(uid, sign.getUm(), sign.getUm(), "头像",sign.getPassword());
+				int result1 = userMapper.insert(uid, sign.getUm(), sign.getUm(), "头像", sign.getPassword());
 				System.out.println("uid==" + uid);
 				System.out.println("result1==" + result1);
 			}
@@ -393,14 +407,16 @@ public class CoreController extends BaseController {
 			System.out.println("uid==" + uid);
 		} else {
 			uid = UUID.randomUUID().toString();
-			//int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("mobile"), "头像");
-			//user表： mobile-name 手机号码
-			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),requestMap.get("profilephoto"),requestMap.get("password"));
-			
+			// int result = userMapper.insert(uid, requestMap.get("mobile"),
+			// requestMap.get("mobile"), "头像");
+			// user表： mobile-name 手机号码
+			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),
+					requestMap.get("profilephoto"), requestMap.get("password"));
+
 			System.out.println("uid==" + uid);
 			System.out.println("result==" + result);
 			// 注册成功后置为已登陆
-			//statusMachine.put(requestMap.get("mobile"), 1);
+			// statusMachine.put(requestMap.get("mobile"), 1);
 		}
 
 		Map<String, String> subMap = new HashMap<String, String>();
@@ -424,50 +440,154 @@ public class CoreController extends BaseController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int resultCode = 200;
 
-		User user = userMapper.findByName(requestMap.get("mobile"));
+		User user = null;
 		String uid = null;
 
-		try{
-		if (statusMachine.get(requestMap.get("mobile")) == null) {
-			//user = userMapper.findByName(requestMap.get("mobile"));
-			
-			user = userMapper.findByNameAndPassword(requestMap.get("mobile"),requestMap.get("password"));
-			if(null != user){
+		try {
+			// user = userMapper.findByName(requestMap.get("mobile"));
+			user = userMapper.findByNameAndPassword(requestMap.get("mobile"), requestMap.get("password"));
+			if (null != user) {
 				uid = user.getId();
-			}
-			if (user == null && user.getId() == null && user.getId().length() == 0) {
-				resultMessage = "手机未注册，请注册后再登录";
-				resultCode = 510;
-				System.out.println(resultMessage);
+				// 判断需要更新的信息
+
 			} else {
-				// 置为已登陆
-				//statusMachine.put(requestMap.get("mobile"), 1);
+				// 未查询到用户信息 不做用户信息更新
+				// statusMachine.put(requestMap.get("mobile"), 1);
 				resultMessage = "登录成功";
 				System.out.println(resultMessage);
 			}
-		} else if (statusMachine.get(requestMap.get("mobile")).intValue() == 1) {
-			resultMessage = "已经登录，无需重复登录";
-			resultCode = 210;
-			System.out.println(resultMessage);
-		} else {
-			// 置为已登陆
-			//statusMachine.put(requestMap.get("mobile"), 1);
-			resultMessage = "登录成功";
-			System.out.println(resultMessage);
+
+			Map<String, String> subMap = new HashMap<String, String>();
+			subMap.put("uid", uid);// id 主键信息
+			subMap.put("name", user.getName());// 姓名
+			subMap.put("nickname", user.getNickname());// 昵称
+			subMap.put("profilephoto", user.getProfilephoto());// 头像
+			subMap.put("subscribetime", user.getSubscribetime());// 注册时间
+			// subMap.put("password", user.getPassword());//密码
+			System.out.println("subMap: " + subMap);
+			map.put("value", subMap);
+		} catch (NullPointerException e) {
+			resultMessage = "手机未注册，请注册后再登录:查询数据库无记录，为null.";
+			resultCode = 550;
+			System.out.println("Exception: " + e.getMessage());
+		} catch (Exception e) {
+			resultMessage = "手机未注册，请注册后再登录:其他异常.";
+			resultCode = 500;
+			System.out.println("Exception: " + e.getMessage());
+		} finally {
+			map.put("resultCode", resultCode);
+			map.put("resultMessage", resultMessage);
+			return map;
 		}
 
-		Map<String, String> subMap = new HashMap<String, String>();
-		subMap.put("uid", uid);
-		System.out.println("subMap: " + subMap);
-		map.put("resultCode", resultCode);
-		map.put("resultMessage", resultMessage);
-		map.put("value", subMap);
-		}catch (Exception e){
+	}
+
+	/**
+	 * 更新用户信息 request: { "mobile": "13568836650", "img": "图片信息","image_url":
+	 * "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
+	 * updateFlag 含义 1 更新头像 image_url 2 更新昵称 nickname 3 更新个性签名 personnotes 4
+	 * 更新籍贯 country、province、city 5 更新1-4项所有信息
+	 * 
+	 */
+	@RequestMapping(value = "/update/userinfro", method = RequestMethod.POST)
+	public Map<String, Object> upUserInfro(@RequestBody Map<String, Object> requestMap) throws Exception {
+		System.out.println(requestMap.toString());
+		String resultMessage = "接口调用正常返回";
+		Map<String, Object> map = new HashMap<String, Object>();
+		int resultCode = 200;
+
+		// User user = userMapper.findByName(requestMap.get("mobile"));
+		User user = null;
+		String uid = null;
+
+		try {
+			user = userMapper.findByNameAndPassword((String) requestMap.get("mobile"),
+					(String) requestMap.get("password"));
+			if (null != user) {
+				uid = user.getId();
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
+				user.setLastupdatetime(df.format(new Date()).toString());
+				System.out.println(df.format(new Date()).toString());// new
+																		// Date()为获取当前系统时间
+
+				// user.setImage_url(null!=requestMap.get("image_url")?(String)requestMap.get("image_url"):"");
+				user.setNickname(null != requestMap.get("nickname") ? (String) requestMap.get("nickname") : "");
+				user.setNickname(null != requestMap.get("personnotes") ? (String) requestMap.get("personnotes") : "");
+				user.setCountry(null != requestMap.get("country") ? (String) requestMap.get("country") : "");
+				user.setProvince(null != requestMap.get("province") ? (String) requestMap.get("province") : "");
+				user.setCity(null != requestMap.get("city") ? (String) requestMap.get("city") : "");
+
+				int result = userMapper.updateAllInfro(user);
+				if (result > 0) {
+					System.out.println("更新昵称、区域等信息成功！！ result = " + result);
+					resultMessage = "更新昵称、区域等信息成功！！";
+					resultCode = 200;
+				} else {
+					System.out.println("更新昵称、区域等信息失败！！ result = " + result);
+					resultMessage = "更新昵称、区域等信息失败！！";
+					resultCode = 210;
+				}
+
+				// 判断图片信息是佛有值
+				if (null != requestMap.get("img")) {
+					java.net.URL urlImg = CoreController.class.getResource("../");
+					List imgList = (ArrayList) requestMap.get("img");
+					System.out.println("imgList = " + imgList);
+					String imgData = (String) ((Map) imgList.get(0)).get("data");
+					System.out.println("imgData = " + imgData);
+					String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
+					System.out.println("imgSuffix = " + imgSuffix);
+
+					byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
+					System.out.println("bs = " + bs);
+
+					// 上传图片
+					int ret = UploadOss.UploadByte("image", (String) requestMap.get("recordId") + imgSuffix, bs);
+					// int ret = UploadOss.UploadFile("miniconch",
+					// file.getName(), file.getPath());
+
+					// 更新图片url信息
+					// if()
+
+					if (ret == 0) {
+						System.out.println("图片文件上传image目录成功！！ ret = " + ret);
+						resultMessage += "更新图片数据成功";
+						resultCode = 200;
+					} else {
+						System.out.println("图片文件上传OSS失败！！ ret = " + ret);
+						resultMessage += "图片上传数据失败！";
+						resultCode = 220;
+					}
+
+					int resultimg = userMapper.updateImageUrl(user);
+				}
+
+			}
+			/*
+			 * Map<String, String> subMap = new HashMap<String, String>();
+			 * subMap.put("uid", uid);// id 主键信息 subMap.put("name",
+			 * user.getName());// 姓名 subMap.put("nickname",
+			 * user.getNickname());// 昵称 subMap.put("profilephoto",
+			 * user.getProfilephoto());// 头像 subMap.put("subscribetime",
+			 * user.getSubscribetime());// 注册时间 subMap.put("lastupdatetime",
+			 * user.getLastupdatetime());// 最后一次更新时间 // subMap.put("password",
+			 * user.getPassword());//密码 System.out.println("subMap: " + subMap);
+			 * map.put("value", subMap);
+			 */
+		} catch (NullPointerException e) {
+			resultMessage = "数据更新失败:查询数据库无记录，为null.";
+			resultCode = 550;
 			System.out.println("Exception: " + e.getMessage());
-		}finally {			
-            return map;  
-        } 
-		
+		} catch (Exception e) {
+			resultMessage = "数据更新失败:其他异常.";
+			resultCode = 500;
+			System.out.println("Exception: " + e.getMessage());
+		} finally {
+			map.put("resultCode", resultCode);
+			map.put("resultMessage", resultMessage);
+			return map;
+		}
+
 	}
 
 	/**
@@ -531,30 +651,33 @@ public class CoreController extends BaseController {
 		// String filePath = urlImg + (String) requestMap.get("recordId") + "."
 		// + imgSuffix;
 
-		//File file = new File(urlImg + (String) requestMap.get("recordId") + imgSuffix);
-/*		File file = new File("//" + (String) requestMap.get("recordId") + imgSuffix);
+		// File file = new File(urlImg + (String) requestMap.get("recordId") +
+		// imgSuffix);
+		/*
+		 * File file = new File("//" + (String) requestMap.get("recordId") +
+		 * imgSuffix);
+		 * 
+		 * System.out.println("file path = " + file.getPath());
+		 * 
+		 * if(!file.exists()){
+		 * 
+		 * try{ System.out.println("file 不存在,重新创建"); file.createNewFile(); }
+		 * catch(IOException e){ System.out.println("file 不存在,重新创建失败");
+		 * e.printStackTrace(); }
+		 * 
+		 * }
+		 */
 
-		System.out.println("file path = " + file.getPath());
+		/*
+		 * System.out.println("file can read  = " + file.canRead());
+		 * System.out.println("file can write  = " + file.canWrite());
+		 */
 
-		if(!file.exists()){
-			
-			try{
-				System.out.println("file 不存在,重新创建");
-				file.createNewFile();
-			} catch(IOException e){
-				System.out.println("file 不存在,重新创建失败");
-				e.printStackTrace();
-			}
-			
-		}*/
-		
-/*		System.out.println("file can read  = " + file.canRead());
-		System.out.println("file can write  = " + file.canWrite());*/
-		
-		
-/*		System.out.println("before file length = " + file.length());
-		Base64ImgEncodeAndDecode.ImgDecode(imgData, file);
-		System.out.println("after file length = " + file.length());*/
+		/*
+		 * System.out.println("before file length = " + file.length());
+		 * Base64ImgEncodeAndDecode.ImgDecode(imgData, file);
+		 * System.out.println("after file length = " + file.length());
+		 */
 		/*
 		 * try { BASE64Decoder d = new BASE64Decoder(); byte[] bs =
 		 * d.decodeBuffer(imgData); FileOutputStream os = new
@@ -563,27 +686,27 @@ public class CoreController extends BaseController {
 		 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated
 		 * catch block e.printStackTrace(); }
 		 */
-		
+
 		byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
 		System.out.println("bs = " + bs);
-		
+
 		// 上传图片
 		int ret = UploadOss.UploadByte("miniconch", (String) requestMap.get("recordId") + imgSuffix, bs);
-		//int ret = UploadOss.UploadFile("miniconch", file.getName(), file.getPath());
-		
-		if(ret == 0){
+		// int ret = UploadOss.UploadFile("miniconch", file.getName(),
+		// file.getPath());
+
+		if (ret == 0) {
 			System.out.println("文件上传OSS成功！！ ret = " + ret);
-		}else {
+		} else {
 			System.out.println("文件上传OSS失败！！ ret = " + ret);
 		}
 
 		// File file = new File(filePath);
 		// 删除临时文件
-/*		if (file.delete()) {
-			System.out.println(file.getName() + "is deleted");
-		} else {
-			System.out.println("Delete failed.");
-		}*/
+		/*
+		 * if (file.delete()) { System.out.println(file.getName() +
+		 * "is deleted"); } else { System.out.println("Delete failed."); }
+		 */
 
 		// 将文字描述、摘要、图片名称、微信录音名称插入到mysql数据库
 		/**
@@ -623,4 +746,109 @@ public class CoreController extends BaseController {
 		return map;
 	}
 
+	/**
+	 * 新增足迹
+	 * 
+	 * @param comment
+	 * @return
+	 */
+	@RequestMapping(value = "/add/footprint", method = RequestMethod.GET)
+
+		public Map<String, Object> addFootprint(@RequestBody Footprint footprint) {
+		log.info("进入新增足迹 addFootprint");
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("resultCode", SystemConst.SUCCESS);
+		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
+		try {
+			/*
+			Footprint footprint = new Footprint();
+			footprint.setUid("ef30d3eb-b106-459f-82ba-7d6457796d7e");
+			footprint.setLng(new BigDecimal(Double.valueOf(104.066670)));
+			footprint.setLat(new BigDecimal(Double.valueOf(30.666670)));
+			footprint.setCity("成都");
+			footprint.setCountry("中国");
+			footprint.setProvince("四川");*/
+
+			// 查询最近的一次足记
+			Footprint lastFootprint = footprintMapper.findLatestFootprintByUID("ef30d3eb-b106-459f-82ba-7d6457796d7e");
+			log.info(footprint);
+
+			if (null == lastFootprint) {
+				footprintMapper.InsertNewFootprint(footprint);
+			} else {
+				Date nowTime = new Date();
+				// 判断时间
+				if (nowTime.getTime() - lastFootprint.getFootprintDate().getTime() > 120 * 1000) {
+					footprintMapper.InsertNewFootprint(footprint);
+				}
+			}
+			map.put("resultMessage", "不符合插入条件");
+		} catch (Exception e) {
+			map.put("resultCode", SystemConst.ERROR);
+			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
+
+		}
+		return map;
+	}
+
+	/**
+	 * 从足迹表查询明细
+	 * 
+	 * @param comment
+	 * @return
+	 */
+	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
+	public Map<String, Object> queryFromFootprint(@RequestBody Footprint footprint) {
+		System.out.println("进入查询足迹 queryFromFootprint");
+		System.out.println(footprint.toString());
+		int resultCode = 200;
+		String resultMessage = "接口调用正常返回";
+
+		Map<String, Integer> cityMap = new HashMap<String, Integer>();
+		Map<String, Integer> provinceMap = new HashMap<String, Integer>();
+		Map<String, Integer> countryMap = new HashMap<String, Integer>();
+
+		List<Footprint> footPrintList = footprintMapper.findAllFootprintByUID(footprint.getUid());
+
+		if (footPrintList == null || footPrintList.size() == 0) {
+
+			resultCode = 210;
+			resultMessage = "未查询到符合条件的数据";
+		} else {
+			for (Footprint obj : footPrintList) {
+
+				if (cityMap.containsKey(obj.getCity())) {// 判断是否已经有该数值，如有，则将次数加1
+					cityMap.put(obj.getCity(), cityMap.get(obj.getCity()).intValue() + 1);
+				} else {
+					cityMap.put(obj.getCity(), 1);
+				}
+
+				if (provinceMap.containsKey(obj.getProvince())) {// 判断是否已经有该数值，如有，则将次数加1
+					provinceMap.put(obj.getProvince(), provinceMap.get(obj.getProvince()).intValue() + 1);
+				} else {
+					provinceMap.put(obj.getProvince(), 1);
+				}
+
+				if (countryMap.containsKey(obj.getCountry())) {// 判断是否已经有该数值，如有，则将次数加1
+					countryMap.put(obj.getCountry(), countryMap.get(obj.getCountry()).intValue() + 1);
+				} else {
+					countryMap.put(obj.getCountry(), 1);
+				}
+			}
+		}
+
+		System.out.println("进入查询足迹 queryFromFootprint done,result= " + resultCode);
+
+		System.out.println("进入查询足迹 queryFromFootprint done,cityCount= " + cityMap.size());
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("resultCode", resultCode);
+		map.put("resultMessage", resultMessage);
+		map.put("cityCount", cityMap.size());//
+		map.put("provinceCount", provinceMap.size());// 省份足迹数
+		map.put("countryCount", countryMap.size());// 国家足迹数
+		map.put("defeatClientNum", "84.9");// 百分比
+		map.put("value", footPrintList);
+		return map;
+	}
 }
