@@ -752,9 +752,9 @@ public class CoreController extends BaseController {
 	 * @param comment
 	 * @return
 	 */
-	@RequestMapping(value = "/add/footprint", method = RequestMethod.GET)
+	@RequestMapping(value = "/add/footprint", method = RequestMethod.POST)
 
-		public Map<String, Object> addFootprint(@RequestBody Footprint footprint) {
+		public Map<String, Object> addFootprint11(@RequestBody Footprint footprint) {
 		log.info("进入新增足迹 addFootprint");
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -791,6 +791,62 @@ public class CoreController extends BaseController {
 		}
 		return map;
 	}
+	/**
+	 * 从足迹表查询明细
+	 * 
+	 * @param comment
+	 * @return
+	 */
+	@RequestMapping(value = "/query/footprint/rank", method = RequestMethod.POST)
+	public Map<String, Object> queryRank(@RequestBody String  uid) {	
+		log.info("进入查询排名queryRank");
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("resultCode", SystemConst.SUCCESS);
+		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
+		try {
+			//1、查询总用户数
+			int tatalNum=footprintMapper.getUserTatalNum();
+			//2、查询用户排名
+			int rank=footprintMapper.getUserRank(uid);
+			//3、计算打败人数百分百
+			double pkNum=1.0*100*(tatalNum-rank)/tatalNum;
+			String result = String .format("%.2f",pkNum);
+			map.put("percent", result);
+			map.put("tatalNum", tatalNum);
+			map.put("rank", rank);
+		} catch (Exception e) {
+			map.put("resultCode", SystemConst.ERROR);
+			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
+
+		}
+		return map;		
+	}
+	
+	
+	/**
+	 * 查询某一用户的所以足迹
+	 * @param footprint
+	 * @return
+	 */
+	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
+	public Map<String, Object> queryAllFootprintByUid(@PathVariable String uid) {
+		
+		log.info("进入查询足迹queryAllFootprintByUid");
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("resultCode", SystemConst.SUCCESS);
+		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
+		try {			
+			List<Footprint> list=footprintMapper.findAllFootprintByUID(uid);		
+			map.put("data", list);		
+		} catch (Exception e) {
+			map.put("resultCode", SystemConst.ERROR);
+			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
+
+		}
+		return map;				
+	}
 
 	/**
 	 * 从足迹表查询明细
@@ -798,6 +854,7 @@ public class CoreController extends BaseController {
 	 * @param comment
 	 * @return
 	 */
+	/*
 	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
 	public Map<String, Object> queryFromFootprint(@RequestBody Footprint footprint) {
 		System.out.println("进入查询足迹 queryFromFootprint");
@@ -850,5 +907,5 @@ public class CoreController extends BaseController {
 		map.put("defeatClientNum", "84.9");// 百分比
 		map.put("value", footPrintList);
 		return map;
-	}
+	}*/
 }

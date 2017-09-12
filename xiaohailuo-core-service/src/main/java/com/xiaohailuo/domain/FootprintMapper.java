@@ -27,8 +27,6 @@ public interface FootprintMapper {
     })
 	int InsertNewFootprint(Footprint footprint);
 	
-	
-
 	//通过uid查询足迹表
 	@Select("SELECT * FROM footprint  WHERE uid = #{uid} order by  date desc limit 0,1")
 	@Results({ 
@@ -40,13 +38,36 @@ public interface FootprintMapper {
 
 	
 	
-
-	@Select("SELECT * FROM footprint t WHERE t.uid = #{uid}")
+    /**
+     * 根据Uid查询所以足记
+     * @param uid
+     * @return
+     */
+	@Select("SELECT * FROM footprint t WHERE t.uid=#{id} order by date desc")
 	@Results({ 
 			@Result(property = "footprintDate", column = "date")
 	})
 	List<Footprint> findAllFootprintByUID(@Param("uid") String uid);
 
+	
+	
+    /**
+     * 根据用户数量
+     * @param uid
+     * @return
+     */
+	@Select("SELECT count(*) FROM user")
+	int getUserTatalNum();
+	
+	
+    /**
+     * 查询足记数量排名
+     * @param uid
+     * @return
+     */
+	@Select("select rank from(SELECT *,(SELECT count(DISTINCT score) FROM (  SELECT uid,count(*) score FROM footprint group by uid)  AS b WHERE a.score<b.score)+1 AS rank FROM (  SELECT uid,count(*) score FROM footprint group by uid)  AS a ORDER BY rank) r where uid=#{id}")
+	int getUserRank(@Param("uid") String uid);
+	
 	
 	
 	
