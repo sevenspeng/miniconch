@@ -47,7 +47,7 @@ public interface FootprintMapper {
 	@Results({ 
 			@Result(property = "footprintDate", column = "date")
 	})
-	List<Footprint> findAllFootprintByUID(@Param("uid") String uid);
+	List<Footprint> findAllFootprintByUID(@Param("id") String uid);
 
 	
 	
@@ -66,7 +66,7 @@ public interface FootprintMapper {
      * @return
      */
 	@Select("select rank from(SELECT *,(SELECT count(DISTINCT score) FROM (  SELECT uid,count(*) score FROM footprint group by uid)  AS b WHERE a.score<b.score)+1 AS rank FROM (  SELECT uid,count(*) score FROM footprint group by uid)  AS a ORDER BY rank) r where uid=#{id}")
-	int getUserRank(@Param("uid") String uid);
+	int getUserRank(@Param("id") String uid);
 	
 	
 	

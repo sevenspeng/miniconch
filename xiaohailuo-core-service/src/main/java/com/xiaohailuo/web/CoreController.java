@@ -761,17 +761,8 @@ public class CoreController extends BaseController {
 		map.put("resultCode", SystemConst.SUCCESS);
 		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
 		try {
-			/*
-			Footprint footprint = new Footprint();
-			footprint.setUid("ef30d3eb-b106-459f-82ba-7d6457796d7e");
-			footprint.setLng(new BigDecimal(Double.valueOf(104.066670)));
-			footprint.setLat(new BigDecimal(Double.valueOf(30.666670)));
-			footprint.setCity("成都");
-			footprint.setCountry("中国");
-			footprint.setProvince("四川");*/
-
 			// 查询最近的一次足记
-			Footprint lastFootprint = footprintMapper.findLatestFootprintByUID("ef30d3eb-b106-459f-82ba-7d6457796d7e");
+			Footprint lastFootprint = footprintMapper.findLatestFootprintByUID(footprint.getUid());
 			log.info(footprint);
 
 			if (null == lastFootprint) {
@@ -781,9 +772,10 @@ public class CoreController extends BaseController {
 				// 判断时间
 				if (nowTime.getTime() - lastFootprint.getFootprintDate().getTime() > 120 * 1000) {
 					footprintMapper.InsertNewFootprint(footprint);
+				}else{
+					map.put("resultMessage", "不符合插入条件");
 				}
-			}
-			map.put("resultMessage", "不符合插入条件");
+			}			
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
@@ -798,7 +790,7 @@ public class CoreController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/query/footprint/rank", method = RequestMethod.POST)
-	public Map<String, Object> queryRank(@RequestBody String  uid) {	
+	public Map<String, Object> queryRank(@RequestBody Map<String, Object> requestMap) {	
 		log.info("进入查询排名queryRank");
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -808,7 +800,7 @@ public class CoreController extends BaseController {
 			//1、查询总用户数
 			int tatalNum=footprintMapper.getUserTatalNum();
 			//2、查询用户排名
-			int rank=footprintMapper.getUserRank(uid);
+			int rank=footprintMapper.getUserRank(requestMap.get("uid").toString());
 			//3、计算打败人数百分百
 			double pkNum=1.0*100*(tatalNum-rank)/tatalNum;
 			String result = String .format("%.2f",pkNum);
@@ -830,7 +822,7 @@ public class CoreController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
-	public Map<String, Object> queryAllFootprintByUid(@PathVariable String uid) {
+	public Map<String, Object> queryAllFootprintByUid(@RequestBody Map<String, Object> requestMap) {
 		
 		log.info("进入查询足迹queryAllFootprintByUid");
 
@@ -838,8 +830,19 @@ public class CoreController extends BaseController {
 		map.put("resultCode", SystemConst.SUCCESS);
 		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
 		try {			
-			List<Footprint> list=footprintMapper.findAllFootprintByUID(uid);		
-			map.put("data", list);		
+			List<Footprint> list=footprintMapper.findAllFootprintByUID(requestMap.get("uid").toString());	
+			List<HashMap<String,String>> dataList=new ArrayList<HashMap<String,String>>();
+			for(int i=0;i<list.size();i++){
+				HashMap<String,String> item=new HashMap<String,String>();
+				item.put("uid", list.get(i).getUid());
+				item.put("lat", list.get(i).getLat().toPlainString());
+				item.put("lng", list.get(i).getLng().toPlainString());
+				item.put("city", list.get(i).getCity());
+				item.put("province", list.get(i).getProvince());
+				item.put("country", list.get(i).getCountry());
+				dataList.add(item);
+			}
+			map.put("data", dataList);		
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
