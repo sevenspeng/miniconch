@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xiaohailuo.bean.CommentInfo;
 
 public class Footprint {
@@ -19,6 +21,7 @@ public class Footprint {
 	private String city;
 	private String province;
 	private String country;
+	@JsonFormat(pattern = "yyyy-MM-dd HH-mm-ss")
 	private Date footprintDate;
 	
 
