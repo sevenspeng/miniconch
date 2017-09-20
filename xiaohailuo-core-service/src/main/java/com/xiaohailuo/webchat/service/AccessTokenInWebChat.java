@@ -16,8 +16,13 @@ public class AccessTokenInWebChat {
 	//xiaohailuo
 	/*public static final String APP_ID = "wxa7efceb860cbfa5b";
 	public static final String SECRET = "1e3a0ad362a6b80eb390da3bb31084cf";*/
-	public static final String APP_ID = "wxc48e52be91c76a40";
-	public static final String SECRET = "4694b3d66c5733db3eb50e0f776ac7f3";
+	//public static final String APP_ID = "wxc48e52be91c76a40";
+	//public static final String SECRET = "4694b3d66c5733db3eb50e0f776ac7f3";
+	
+	public static final String APP_ID = "wxb2c12f0f855920ea";
+		//private String SECRET = "4694b3d66c5733db3eb50e0f776ac7f3";
+		
+	public static final String SECRET = "216bafcf6de291ca1f99160a6bc6867c";
 	public static String current_AccessToken = "";
 	
 

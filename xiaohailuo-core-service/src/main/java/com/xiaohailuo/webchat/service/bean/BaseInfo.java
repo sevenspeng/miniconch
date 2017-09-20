@@ -13,8 +13,10 @@ public class BaseInfo {
 		return SingletonHolder.instance;
 	}
 	
-	private String appId = "wxc48e52be91c76a40";
-	private String secret = "4694b3d66c5733db3eb50e0f776ac7f3";
+	private String appId = "wxb2c12f0f855920ea";
+	//private String secret = "4694b3d66c5733db3eb50e0f776ac7f3";
+	
+	private String secret = "216bafcf6de291ca1f99160a6bc6867c";
 	private String accessToken = "";
 	private Long expiresIn = 7200L;
 	private String jsapiTicket = "";

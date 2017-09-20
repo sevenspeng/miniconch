@@ -2,15 +2,15 @@
  * Created by JINGDAYAN962 on 2016-11-09.
  */
 
-var appId = "wxc48e52be91c76a40";
-var appSecret = "4694b3d66c5733db3eb50e0f776ac7f3";
+var appId = "wxb2c12f0f855920ea";
+var appSecret = "216bafcf6de291ca1f99160a6bc6867c";
 var url = "http://xiaohailuoapp.applinzi.com/wx.html";
 var accessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret + "";
 var jsapiTicketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";//"?access_token=ACCESS_TOKEN&type=jsapi";
 
 wx.config({
     debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-    appId: 'wxc48e52be91c76a40', // 必填，公众号的唯一标识
+    appId: 'wxb2c12f0f855920ea', // 必填，公众号的唯一标识
     timestamp: getTimestamp(), // 必填，生成签名的时间戳
     nonceStr: getNonceStr(), // 必填，生成签名的随机串
     signature: getSignature(url),// 必填，签名，见附录1

@@ -840,6 +840,7 @@ public class CoreController extends BaseController {
 				item.put("city", list.get(i).getCity());
 				item.put("province", list.get(i).getProvince());
 				item.put("country", list.get(i).getCountry());
+				item.put("footprintDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getFootprintDate()));
 				dataList.add(item);
 			}
 			map.put("data", dataList);		
