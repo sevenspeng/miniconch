@@ -44,6 +44,7 @@ public class UploadOss {
 			ret = 0;
 			return ret;
 
+			//kkkk
 		} catch (OSSException oe) {
 			System.out.println("Caught an OSSException, which means your request made it to OSS, "
 					+ "but was rejected with an error response for some reason.");
