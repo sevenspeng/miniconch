@@ -236,6 +236,8 @@ public class HttpConnectionUtil {
 	 */
 	public static File downloadFile(String urlPath, String downloadDir, String fileName) {
 		File file = null;
+		OutputStream out =null;
+		BufferedInputStream bin =null;
 		try {
 			// 统一资源
 			URL url = new URL(urlPath);
@@ -244,31 +246,14 @@ public class HttpConnectionUtil {
 			// http的连接类
 			HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
 			// 设定请求的方法，默认是GET
-			httpURLConnection.setRequestMethod("POST");
+			httpURLConnection.setRequestMethod("GET");
 			// 设置字符编码
 			httpURLConnection.setRequestProperty("Charset", "UTF-8");
 			// 打开到此 URL 引用的资源的通信链接（如果尚未建立这样的连接）。
 			httpURLConnection.connect();
-
 			// 文件大小
-			int fileLength = httpURLConnection.getContentLength();
-
-			// 文件名
-			String filePathUrl = httpURLConnection.getURL().getFile();
-			System.out.println("downloadFile filePathUrl---->" + filePathUrl);
-			String fileFullName = filePathUrl.substring(filePathUrl.lastIndexOf(File.separatorChar) + 1);
-			//String fileFullName = filePathUrl.substring(filePathUrl.lastIndexOf("/") + 1);
-			System.out.println("downloadFile fileFullName---->" + fileFullName);
-
-			System.out.println("downloadFile file length---->" + fileLength);
-
-			URLConnection con = url.openConnection();
-
-			BufferedInputStream bin = new BufferedInputStream(httpURLConnection.getInputStream());
-			
-			System.out.println("downloadFile downloadDir---->" + downloadDir);
-			System.out.println("downloadFile bin---->" + bin.toString());
-			//String path = downloadDir + File.separatorChar + fileFullName;
+			int fileLength = httpURLConnection.getContentLength();			
+			bin = new BufferedInputStream(httpURLConnection.getInputStream());
 			String path = downloadDir + "/" + fileName;
 			System.out.println("downloadFile path---->" + path);
 			
@@ -276,7 +261,7 @@ public class HttpConnectionUtil {
 			if (!file.getParentFile().exists()) {
 				file.getParentFile().mkdirs();
 			}
-			OutputStream out = new FileOutputStream(file);
+			out = new FileOutputStream(file);
 			int size = 0;
 			int len = 0;
 			byte[] buf = new byte[1024];
@@ -285,18 +270,60 @@ public class HttpConnectionUtil {
 				out.write(buf, 0, size);
 				// 打印下载百分比
 				System.out.println("下载了-------> " + len * 100 / fileLength + "%\n");
-			}
-			bin.close();
-			out.close();
+			}			
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			return file;
+			
+			try {
+				bin.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		return file;
 
 	}
+	  
+	/**
+	 * 下载文件流
+	 * @param accessToken
+	 * @param mediaId
+	 * @return
+	 */
+    public static InputStream getInputStream(String url) {  
+        InputStream is = null;  
+          try {  
+            URL urlGet = new URL(url);  
+            HttpURLConnection http = (HttpURLConnection) urlGet  
+                    .openConnection();  
+            http.setRequestMethod("GET");
+            http.setRequestProperty("Content-Type",  
+                    "application/x-www-form-urlencoded");  
+            http.setDoOutput(true);  
+            http.setDoInput(true);  
+            System.setProperty("sun.net.client.defaultConnectTimeout", "30000");// 连接超时30秒  
+            System.setProperty("sun.net.client.defaultReadTimeout", "30000"); // 读取超时30秒  
+            http.connect();  
+            // 获取文件转化为byte流  
+            is = http.getInputStream();  
+  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+        return is;  
+  
+    }  
 /*
 	public static void main(String[] args) {
 

@@ -41,7 +41,7 @@ public interface UserMapper {
     int updateImageUrl(User user);
     @Update("UPDATE user SET personnotes=#{personnotes} WHERE name=#{name}")
     int updatePersonNotes(User user);
-    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},personnotes=#{personnotes} WHERE name=#{name} and id=#{id}")
+    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},personnotes=#{personnotes},lastupdatetime=#{lastupdatetime} WHERE name=#{name} and id=#{id}")
     int updateAllInfro(User user);
 
     /*@Results({

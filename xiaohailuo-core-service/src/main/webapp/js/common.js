@@ -4,8 +4,8 @@
 //app base 路径
 //var baseUrl="http://www.miniconch.cn/xiaohailuo/";
 //var baseUrl="http://localhost:63342/xiaohailuo/";
-//var baseUrl = "http://"+window.location.host + "/xiaohailuo/";
-var baseUrl = "http://"+window.location.host + "/";
+var baseUrl = "http://www.miniconch.cn/xiaohailuo/";
+//var baseUrl = "http://"+window.location.host + "/";
 
 //签到
 var signInUrl = "core/add/record/sign";

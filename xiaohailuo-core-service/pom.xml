@@ -146,7 +146,15 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/src/main/resources/lib/jdom-1.1.jar</systemPath>
 		</dependency>
-
+		<!-- 
+		<dependency>
+			<groupId>jave-1.0.2</groupId>
+			<artifactId>jave</artifactId>
+			<version>1.0.2</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/jave-1.0.2.jar</systemPath>
+		</dependency>
+ -->
 	</dependencies>
 
 	<!-- SpringBoot Cloud Begin -->
@@ -195,5 +203,5 @@
 				</plugin> -->
 		</plugins>
 	</build>
-
+ 
 </project>

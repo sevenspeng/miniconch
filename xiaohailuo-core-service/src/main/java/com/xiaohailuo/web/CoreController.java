@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.sound.sampled.AudioFormat;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import com.xiaohailuo.bean.CommentInfo;
 import com.xiaohailuo.bean.Coordinate;
 import com.xiaohailuo.bean.CoordinateScope;
 import com.xiaohailuo.bean.Like;
+import com.xiaohailuo.common.util.HttpConnectionUtil;
 import com.xiaohailuo.domain.Comment;
 import com.xiaohailuo.domain.CommentMapper;
 import com.xiaohailuo.domain.Footprint;
@@ -41,10 +45,12 @@ import com.xiaohailuo.domain.SignMapper;
 import com.xiaohailuo.domain.User;
 import com.xiaohailuo.domain.UserMapper;
 import com.xiaohailuo.root.Root;
+import com.xiaohailuo.util.ChangeAudioFormat;
 import com.xiaohailuo.util.LocationUtils;
 import com.xiaohailuo.util.MapUtils;
 import com.xiaohailuo.util.SystemConst;
 import com.xiaohailuo.util.UUIDGenerator;
+import com.xiaohailuo.webchat.service.AccessTokenInWebChat;
 import com.xiaohailuo.webchat.util.Base64ImgEncodeAndDecode;
 import com.xiaohailuo.webchat.util.UploadOss;
 
@@ -384,7 +390,6 @@ public class CoreController extends BaseController {
 
 		return map;
 	}
-
 	/**
 	 * 用户注册 request: { "mobile": "13568836650", "password": "123456" }
 	 *
@@ -407,16 +412,14 @@ public class CoreController extends BaseController {
 			System.out.println("uid==" + uid);
 		} else {
 			uid = UUID.randomUUID().toString();
-			// int result = userMapper.insert(uid, requestMap.get("mobile"),
-			// requestMap.get("mobile"), "头像");
-			// user表： mobile-name 手机号码
-			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),
-					requestMap.get("profilephoto"), requestMap.get("password"));
-
+			//int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("mobile"), "头像");
+			//user表： mobile-name 手机号码
+			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),requestMap.get("profilephoto"),requestMap.get("password"));
+			
 			System.out.println("uid==" + uid);
 			System.out.println("result==" + result);
 			// 注册成功后置为已登陆
-			// statusMachine.put(requestMap.get("mobile"), 1);
+			//statusMachine.put(requestMap.get("mobile"), 1);
 		}
 
 		Map<String, String> subMap = new HashMap<String, String>();
@@ -431,7 +434,7 @@ public class CoreController extends BaseController {
 
 	/**
 	 * 用户登录 request: { "mobile": "13568836650", "password": "123456" }
-	 * 
+	 * 	 
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Map<String, Object> signIn(@RequestBody Map<String, String> requestMap) throws Exception {
@@ -439,54 +442,57 @@ public class CoreController extends BaseController {
 		String resultMessage = "接口调用正常返回";
 		Map<String, Object> map = new HashMap<String, Object>();
 		int resultCode = 200;
-
+		
 		User user = null;
 		String uid = null;
 
-		try {
-			// user = userMapper.findByName(requestMap.get("mobile"));
-			user = userMapper.findByNameAndPassword(requestMap.get("mobile"), requestMap.get("password"));
-			if (null != user) {
+		try{		
+			//user = userMapper.findByName(requestMap.get("mobile"));			
+			user = userMapper.findByNameAndPassword(requestMap.get("mobile"),requestMap.get("password"));
+			if(null != user){
 				uid = user.getId();
-				// 判断需要更新的信息
-
-			} else {
-				// 未查询到用户信息 不做用户信息更新
-				// statusMachine.put(requestMap.get("mobile"), 1);
+				//判断需要更新的信息
+				
+			}else {
+				// 未查询到用户信息   不做用户信息更新
+				//statusMachine.put(requestMap.get("mobile"), 1);
 				resultMessage = "登录成功";
 				System.out.println(resultMessage);
-			}
+			}		
 
-			Map<String, String> subMap = new HashMap<String, String>();
-			subMap.put("uid", uid);// id 主键信息
-			subMap.put("name", user.getName());// 姓名
-			subMap.put("nickname", user.getNickname());// 昵称
-			subMap.put("profilephoto", user.getProfilephoto());// 头像
-			subMap.put("subscribetime", user.getSubscribetime());// 注册时间
-			// subMap.put("password", user.getPassword());//密码
-			System.out.println("subMap: " + subMap);
-			map.put("value", subMap);
-		} catch (NullPointerException e) {
+		Map<String, String> subMap = new HashMap<String, String>();
+		subMap.put("uid", uid);//id 主键信息
+		subMap.put("name", user.getName());//姓名
+		subMap.put("nickname", user.getNickname());//昵称
+		subMap.put("profilephoto", user.getProfilephoto());//头像
+		subMap.put("subscribetime", user.getSubscribetime());//注册时间
+		//subMap.put("password", user.getPassword());//密码
+		System.out.println("subMap: " + subMap);		
+		map.put("value", subMap);
+		}catch (NullPointerException e){
 			resultMessage = "手机未注册，请注册后再登录:查询数据库无记录，为null.";
 			resultCode = 550;
 			System.out.println("Exception: " + e.getMessage());
-		} catch (Exception e) {
+		}catch (Exception e){
 			resultMessage = "手机未注册，请注册后再登录:其他异常.";
 			resultCode = 500;
 			System.out.println("Exception: " + e.getMessage());
-		} finally {
+		}finally{
 			map.put("resultCode", resultCode);
 			map.put("resultMessage", resultMessage);
-			return map;
-		}
-
+            return map;  
+        } 
+		
 	}
 
 	/**
-	 * 更新用户信息 request: { "mobile": "13568836650", "img": "图片信息","image_url":
-	 * "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
-	 * updateFlag 含义 1 更新头像 image_url 2 更新昵称 nickname 3 更新个性签名 personnotes 4
-	 * 更新籍贯 country、province、city 5 更新1-4项所有信息
+	 * 更新用户信息 request: { "mobile": "13568836650", "img": "图片信息","image_url": "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
+	 * updateFlag    含义
+	 *          1             更新头像             image_url
+	 *          2             更新昵称             nickname
+	 *          3             更新个性签名   personnotes
+	 *          4             更新籍贯            country、province、city
+	 *          5            更新1-4项所有信息
 	 * 
 	 */
 	@RequestMapping(value = "/update/userinfro", method = RequestMethod.POST)
@@ -494,9 +500,9 @@ public class CoreController extends BaseController {
 		System.out.println(requestMap.toString());
 		String resultMessage = "接口调用正常返回";
 		Map<String, Object> map = new HashMap<String, Object>();
-		int resultCode = 200;
+		int resultCode = 200,intUpUserInfro = 0,intUpLoadImg = 0,intUpImgUrl=0;
 
-		// User user = userMapper.findByName(requestMap.get("mobile"));
+		//User user = userMapper.findByName(requestMap.get("mobile"));
 		User user = null;
 		String uid = null;
 
@@ -507,8 +513,7 @@ public class CoreController extends BaseController {
 				uid = user.getId();
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
 				user.setLastupdatetime(df.format(new Date()).toString());
-				System.out.println(df.format(new Date()).toString());// new
-																		// Date()为获取当前系统时间
+				System.out.println(df.format(new Date()).toString());// new Date()为获取当前系统时间
 
 				// user.setImage_url(null!=requestMap.get("image_url")?(String)requestMap.get("image_url"):"");
 				user.setNickname(null != requestMap.get("nickname") ? (String) requestMap.get("nickname") : "");
@@ -517,17 +522,8 @@ public class CoreController extends BaseController {
 				user.setProvince(null != requestMap.get("province") ? (String) requestMap.get("province") : "");
 				user.setCity(null != requestMap.get("city") ? (String) requestMap.get("city") : "");
 
-				int result = userMapper.updateAllInfro(user);
-				if (result > 0) {
-					System.out.println("更新昵称、区域等信息成功！！ result = " + result);
-					resultMessage = "更新昵称、区域等信息成功！！";
-					resultCode = 200;
-				} else {
-					System.out.println("更新昵称、区域等信息失败！！ result = " + result);
-					resultMessage = "更新昵称、区域等信息失败！！";
-					resultCode = 210;
-				}
-
+				intUpUserInfro = userMapper.updateAllInfro(user);
+				
 				// 判断图片信息是佛有值
 				if (null != requestMap.get("img")) {
 					java.net.URL urlImg = CoreController.class.getResource("../");
@@ -542,38 +538,37 @@ public class CoreController extends BaseController {
 					System.out.println("bs = " + bs);
 
 					// 上传图片
-					int ret = UploadOss.UploadByte("image", (String) requestMap.get("recordId") + imgSuffix, bs);
+					intUpLoadImg = UploadOss.UploadByte("miniconch", (String) requestMap.get("recordId") + imgSuffix, bs);
 					// int ret = UploadOss.UploadFile("miniconch",
-					// file.getName(), file.getPath());
-
-					// 更新图片url信息
-					// if()
-
-					if (ret == 0) {
-						System.out.println("图片文件上传image目录成功！！ ret = " + ret);
-						resultMessage += "更新图片数据成功";
-						resultCode = 200;
-					} else {
-						System.out.println("图片文件上传OSS失败！！ ret = " + ret);
-						resultMessage += "图片上传数据失败！";
-						resultCode = 220;
-					}
-
-					int resultimg = userMapper.updateImageUrl(user);
+					// file.getName(), file.getPath());					
+					intUpImgUrl = userMapper.updateImageUrl(user);
 				}
 
 			}
-			/*
-			 * Map<String, String> subMap = new HashMap<String, String>();
-			 * subMap.put("uid", uid);// id 主键信息 subMap.put("name",
-			 * user.getName());// 姓名 subMap.put("nickname",
-			 * user.getNickname());// 昵称 subMap.put("profilephoto",
-			 * user.getProfilephoto());// 头像 subMap.put("subscribetime",
-			 * user.getSubscribetime());// 注册时间 subMap.put("lastupdatetime",
-			 * user.getLastupdatetime());// 最后一次更新时间 // subMap.put("password",
-			 * user.getPassword());//密码 System.out.println("subMap: " + subMap);
-			 * map.put("value", subMap);
-			 */
+			
+			//更新图片url信息
+			//if()
+			
+			if (intUpUserInfro > 0 && intUpLoadImg >0 && intUpImgUrl >0) {
+				System.out.println("更新用户信息成功  intUpUserInfro=" + String.valueOf(intUpUserInfro) + ",上传图片信息成功  intUpLoadImg=" + String.valueOf(intUpLoadImg) + ",更新图片链接地址成功  intUpUserInfro=" + String.valueOf(intUpUserInfro));
+				resultMessage = "更新昵称、区域等信息成功！！";
+				resultCode = 200;
+			} else {
+				System.out.println("更新用户信息失败！！用户信息  intUpUserInfro=" + String.valueOf(intUpUserInfro) + ",上传图片信息  intUpLoadImg=" + String.valueOf(intUpLoadImg) + ",更新图片链接地址  intUpUserInfro=" + String.valueOf(intUpUserInfro));
+				resultMessage = "更新昵称、区域等信息失败！！";
+				resultCode = 210;
+			}
+			
+			/*Map<String, String> subMap = new HashMap<String, String>();
+			subMap.put("uid", uid);// id 主键信息
+			subMap.put("name", user.getName());// 姓名
+			subMap.put("nickname", user.getNickname());// 昵称
+			subMap.put("profilephoto", user.getProfilephoto());// 头像
+			subMap.put("subscribetime", user.getSubscribetime());// 注册时间
+			subMap.put("lastupdatetime", user.getLastupdatetime());// 最后一次更新时间
+			// subMap.put("password", user.getPassword());//密码
+			System.out.println("subMap: " + subMap);
+			map.put("value", subMap);*/
 		} catch (NullPointerException e) {
 			resultMessage = "数据更新失败:查询数据库无记录，为null.";
 			resultCode = 550;
@@ -589,7 +584,6 @@ public class CoreController extends BaseController {
 		}
 
 	}
-
 	/**
 	 * 录音点创建 request { "lat": "30.66667", "lng": "104.06667",
 	 * "description":"这是一个好地方", "recordId": "微信返回的录音id", "img": [ { "data":
@@ -598,42 +592,39 @@ public class CoreController extends BaseController {
 	 */
 	@RequestMapping(value = "/add/record/position", method = RequestMethod.POST)
 	public Map<String, Object> setRecordingPosition(@RequestBody Map<String, Object> requestMap) {
-		// http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=ACCESS_TOKEN&media_id=MEDIA_ID
-		// HttpConnectionUtil.downloadFile("http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=ias3G9QkVjN4BnNuOkGf2v2oBzG9JOEJgD1mtL_72uXCiYtT5JBbMlQj2yH7_1p3IHQKEh7FR-lBApaUSpdarvfpdddgzEQi6fwMl80_q4NQ8YvW1gju_Yb3B2ktCXTCASBaABAPHQ&media_id=voiceLocalId1234567890123",
-		// "./file/record", "voiceLocalId1234567890123");
-		// wxLocalResource://voiceLocalId1234567890123
-		// 从微信下载录音并上传到阿里服务器
-		/*
-		 * String accessToken = AccessTokenInWebChat.current_AccessToken; //
-		 * String accessToken = requestMap.get("accessToken"); String baseUrl =
-		 * "http://file.api.weixin.qq.com/cgi-bin/media/get"; String recordUrl =
-		 * String.format("%s?access_token=%s&media_id=%s", baseUrl, accessToken,
-		 * requestMap.get("recordId")); //
-		 * HttpConnectionUtil.downloadFile(recordUrl, //
-		 * System.getProperty("user.dir") + // "/file/record",
-		 * requestMap.get("recordId"));
-		 * 
-		 * java.net.URL urlTemp = CoreController.class.getResource("/"); String
-		 * path = urlTemp.getPath().substring(1, urlTemp.getPath().length() -
-		 * 16); System.out.println("path:" + path);
-		 * 
-		 * String recordId = (String) requestMap.get("recordId");
-		 * 
-		 * File file = HttpConnectionUtil.downloadFile(recordUrl, recordId +
-		 * "tmp"); System.out.println("下载录音成功！！");
-		 * 
-		 * AudioFormat.changeToMp3(recordId + "tmp", recordId);
-		 * 
-		 * System.out.println("录音格式转换成功！！");
-		 * 
-		 * int ret = UploadOss.UploadFile("miniconch", recordId + ".mp3",
-		 * recordId);
-		 * 
-		 * System.out.println("文件上传OSS成功！！ ret = " + ret);
-		 * 
-		 * //删除临时文件 if (file.delete()) { System.out.println(file.getName() +
-		 * "is deleted"); } else { System.out.println("Delete failed."); }
-		 */
+		
+		String accessToken = AccessTokenInWebChat.getAccessToken();		
+		String baseUrl ="http://file.api.weixin.qq.com/cgi-bin/media/get";		
+		String recordUrl = String.format("%s?access_token=%s&media_id=%s", baseUrl, accessToken,requestMap.get("recordId")); 
+		
+		String fileName=(String)requestMap.get("recordId")+".amr";
+		//下载录音文件
+		String downloadDir=System.getProperty("user.dir") + "/file/record";		
+		File amrFile=HttpConnectionUtil.downloadFile(recordUrl, downloadDir ,fileName);			
+		log.info("downloadFile success---->"+fileName);
+		String armFileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".amr");
+		
+		String mp3FileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".mp3");
+		//转换录音文件格式
+		File mp3File = new File(mp3FileName);		
+		//ChangeAudioFormat.changeToMp3(amrFile, mp3File);
+		try {
+			try {
+				ChangeAudioFormat.amr2mp3(armFileName, mp3FileName);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		log.info("changeAudioFormat success---->"+mp3FileName);		
+		UploadOss.UploadFile("miniconch",  (String) requestMap.get("recordId")  + ".mp3",mp3FileName);
+		log.info("UploadFileToOSS success---->"+mp3FileName);	
+		
+
+		
 
 		// 上传图片
 		// BufferedInputStream in = new BufferedInputStream(new
@@ -724,7 +715,8 @@ public class CoreController extends BaseController {
 						+ imgSuffix,
 				// recordfile = "http://www.miniconch.cn:8080/resource/audio/" +
 				// (String)requestMap.get("recordId") + ".mp3" ,
-				recordfile = (String) requestMap.get("recordId"), description = (String) requestMap.get("description");
+		recordfile =  "http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("recordId")+ ".mp3",
+		description = (String) requestMap.get("description");
 		System.out.println("recordfile = " + recordfile);
 		System.out.println("description = " + description);
 		int replyCount = 0, likeCount = 0;
