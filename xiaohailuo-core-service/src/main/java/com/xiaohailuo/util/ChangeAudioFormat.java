@@ -33,8 +33,7 @@ public class ChangeAudioFormat {
 
 	public static void amr2mp3(String amrFileName, String mp3FileName) throws IOException, InterruptedException {
 		Runtime runtime = Runtime.getRuntime();
-		Process process = runtime
-				.exec("/usr/local/ffmpeg/ffmpeg" + " -i " + amrFileName + " -ar 8000 -ac 1 -y -ab 12.4k " + mp3FileName);
+		Process process = runtime.exec("/usr/local/ffmpeg/ffmpeg" + " -i " + amrFileName + " -ar 8000 -ac 1 -y -ab 12.4k " + mp3FileName);
 		process.waitFor();
 		InputStream in = process.getErrorStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));

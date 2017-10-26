@@ -611,12 +611,10 @@ public class CoreController extends BaseController {
 		try {
 			try {
 				ChangeAudioFormat.amr2mp3(armFileName, mp3FileName);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+			} catch (InterruptedException e) {				
 				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 		log.info("changeAudioFormat success---->"+mp3FileName);		
