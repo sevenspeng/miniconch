@@ -8,28 +8,19 @@ public class User {
 	private String profilephoto;
 	private String summary;
 	private String gender;
-	//private String subscribetim;
+	private String signature;
 	private String subscribetime;
-
 	private String qrcode;
 	private String address;
 	private String whatisup;
 	private String region;
-	private String password;
-	
+	private String password;	
 	private String image_url;
 	private String country;
 	private String province;
 	private String city;
 	private String personnotes;
-	private String lastupdatetime;	
-	
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	private String lastupdatetime;
 	public String getId() {
 		return id;
 	}
@@ -66,12 +57,19 @@ public class User {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	/*public String getSubscribetim() {
-		return subscribetim;
+
+	public String getSignature() {
+		return signature;
 	}
-	public void setSubscribetim(String subscribetim) {
-		this.subscribetim = subscribetim;
-	}*/
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+	public String getSubscribetime() {
+		return subscribetime;
+	}
+	public void setSubscribetime(String subscribetime) {
+		this.subscribetime = subscribetime;
+	}
 	public String getQrcode() {
 		return qrcode;
 	}
@@ -96,14 +94,12 @@ public class User {
 	public void setRegion(String region) {
 		this.region = region;
 	}
-	
-	public String getSubscribetime() {
-		return subscribetime;
+	public String getPassword() {
+		return password;
 	}
-	public void setSubscribetime(String subscribetime) {
-		this.subscribetime = subscribetime;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-		
 	public String getImage_url() {
 		return image_url;
 	}
@@ -127,7 +123,7 @@ public class User {
 	}
 	public void setCity(String city) {
 		this.city = city;
-	}	
+	}
 	public String getPersonnotes() {
 		return personnotes;
 	}
@@ -140,12 +136,5 @@ public class User {
 	public void setLastupdatetime(String lastupdatetime) {
 		this.lastupdatetime = lastupdatetime;
 	}
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", nickname=" + nickname + ", profilephoto=" + profilephoto
-				+ ", summary=" + summary + ", gender=" + gender + ", subscribetime=" + subscribetime + ", qrcode="
-				+ qrcode + ", address=" + address + ", whatisup=" + whatisup + ", region=" + region 
-				+ ", image_url=" + image_url + ", country=" + country +", province=" + province+", city=" + city
-				+", personnotes=" + personnotes+", lastupdatetime=" + lastupdatetime+"]";
-	}
+
 }

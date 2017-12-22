@@ -434,59 +434,48 @@ public class CoreController extends BaseController {
 
 	/**
 	 * 用户登录 request: { "mobile": "13568836650", "password": "123456" }
-	 * 	 
+	 * 
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Map<String, Object> signIn(@RequestBody Map<String, String> requestMap) throws Exception {
-		System.out.println(requestMap.toString());
-		String resultMessage = "接口调用正常返回";
-		Map<String, Object> map = new HashMap<String, Object>();
+		log.info("request login:" + requestMap.toString());
 		int resultCode = 200;
-		
-		User user = null;
-		String uid = null;
-
-		try{		
-			//user = userMapper.findByName(requestMap.get("mobile"));			
-			user = userMapper.findByNameAndPassword(requestMap.get("mobile"),requestMap.get("password"));
-			if(null != user){
-				uid = user.getId();
-				//判断需要更新的信息
-				
-			}else {
-				// 未查询到用户信息   不做用户信息更新
-				//statusMachine.put(requestMap.get("mobile"), 1);
-				resultMessage = "登录成功";
-				System.out.println(resultMessage);
-			}		
-
-		Map<String, String> subMap = new HashMap<String, String>();
-		subMap.put("uid", uid);//id 主键信息
-		subMap.put("name", user.getName());//姓名
-		subMap.put("nickname", user.getNickname());//昵称
-		subMap.put("profilephoto", user.getProfilephoto());//头像
-		subMap.put("subscribetime", user.getSubscribetime());//注册时间
-		//subMap.put("password", user.getPassword());//密码
-		System.out.println("subMap: " + subMap);		
-		map.put("value", subMap);
-		}catch (NullPointerException e){
-			resultMessage = "手机未注册，请注册后再登录:查询数据库无记录，为null.";
-			resultCode = 550;
-			System.out.println("Exception: " + e.getMessage());
-		}catch (Exception e){
-			resultMessage = "手机未注册，请注册后再登录:其他异常.";
+		String resultMessage = "登陆成功！";
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			User user = userMapper.findByNameAndPassword(requestMap.get("mobile"), requestMap.get("password"));
+			if (user != null) {
+				Map<String, String> subMap = new HashMap<String, String>();
+				subMap.put("uid", user.getId());// id 主键信息
+				subMap.put("name", user.getName() == null ? "" : user.getName());// 姓名
+				subMap.put("nickname", user.getNickname() == null ? "" : user.getNickname());// 昵称
+				subMap.put("profilephoto", user.getProfilephoto() == null ? "" : user.getProfilephoto());// 头像
+				subMap.put("subscribetime", user.getSubscribetime());// 注册时间
+				subMap.put("gender", user.getGender() == null ? "" : user.getGender());// 性别
+				subMap.put("city", user.getCity() == null ? "" : user.getCity());// 城市
+				subMap.put("signature", user.getSignature() == null ? "" : user.getSignature());// 个性签名
+				// 查询足迹量
+				subMap.put("myfootprint", String.valueOf(userMapper.getFootprintNumByUid(user.getId())));
+				// 查询金币量
+				subMap.put("myCoin", "0");
+				map.put("value", subMap);
+			} else {
+				resultMessage = "手机未注册或密码错误！";
+				resultCode = 550;
+			}
+		} catch (Exception e) {
+			resultMessage = "服务器异常！";
 			resultCode = 500;
-			System.out.println("Exception: " + e.getMessage());
-		}finally{
-			map.put("resultCode", resultCode);
-			map.put("resultMessage", resultMessage);
-            return map;  
-        } 
-		
+			log.error("login error:", e);
+		}
+		map.put("resultCode", resultCode);
+		map.put("resultMessage", resultMessage);
+		log.info(requestMap.get("mobile") + "login response:" + map.toString());
+		return map;
 	}
 
 	/**
-	 * 更新用户信息 request: { "mobile": "13568836650", "img": "图片信息","image_url": "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
+	 * 更新用户信息 request: { "uid": "73c23999-36b2-413f-a2af-06d1099dcf9f", "img": "图片信息","image_url": "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
 	 * updateFlag    含义
 	 *          1             更新头像             image_url
 	 *          2             更新昵称             nickname
@@ -495,95 +484,62 @@ public class CoreController extends BaseController {
 	 *          5            更新1-4项所有信息
 	 * 
 	 */
-	@RequestMapping(value = "/update/userinfro", method = RequestMethod.POST)
+	@RequestMapping(value = "/update/user", method = RequestMethod.POST)
 	public Map<String, Object> upUserInfro(@RequestBody Map<String, Object> requestMap) throws Exception {
-		System.out.println(requestMap.toString());
+		log.info("request updateUser:" + requestMap.toString());
 		String resultMessage = "接口调用正常返回";
 		Map<String, Object> map = new HashMap<String, Object>();
-		int resultCode = 200,intUpUserInfro = 0,intUpLoadImg = 0,intUpImgUrl=0;
-
-		//User user = userMapper.findByName(requestMap.get("mobile"));
-		User user = null;
-		String uid = null;
-
+		int resultCode = 200;
 		try {
-			user = userMapper.findByNameAndPassword((String) requestMap.get("mobile"),
-					(String) requestMap.get("password"));
+			User user = userMapper.findById(requestMap.get("uid").toString());
 			if (null != user) {
-				uid = user.getId();
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// 设置日期格式
-				user.setLastupdatetime(df.format(new Date()).toString());
-				System.out.println(df.format(new Date()).toString());// new Date()为获取当前系统时间
-
-				// user.setImage_url(null!=requestMap.get("image_url")?(String)requestMap.get("image_url"):"");
-				user.setNickname(null != requestMap.get("nickname") ? (String) requestMap.get("nickname") : "");
-				user.setNickname(null != requestMap.get("personnotes") ? (String) requestMap.get("personnotes") : "");
-				user.setCountry(null != requestMap.get("country") ? (String) requestMap.get("country") : "");
-				user.setProvince(null != requestMap.get("province") ? (String) requestMap.get("province") : "");
-				user.setCity(null != requestMap.get("city") ? (String) requestMap.get("city") : "");
-
-				intUpUserInfro = userMapper.updateAllInfro(user);
+				if (null != requestMap.get("nickname") && !"".equals(requestMap.get("nickname")))
+					user.setNickname(requestMap.get("nickname").toString());
+				if (null != requestMap.get("country") && !"".equals(requestMap.get("country")))
+					user.setCountry(requestMap.get("country").toString());
+				if (null != requestMap.get("province") && !"".equals(requestMap.get("province")))
+					user.setProvince(requestMap.get("province").toString());
+				if (null != requestMap.get("city") && !"".equals(requestMap.get("city")))
+					user.setCity(requestMap.get("city").toString());
+				if (null != requestMap.get("signature") && !"".equals(requestMap.get("signature")))
+					user.setSignature(requestMap.get("signature").toString());
+				if (null != requestMap.get("gender") && !"".equals(requestMap.get("gender")))
+					user.setGender(requestMap.get("gender").toString());			
+				
 				
 				// 判断图片信息是佛有值
-				if (null != requestMap.get("img")) {
-					java.net.URL urlImg = CoreController.class.getResource("../");
-					List imgList = (ArrayList) requestMap.get("img");
-					System.out.println("imgList = " + imgList);
-					String imgData = (String) ((Map) imgList.get(0)).get("data");
-					System.out.println("imgData = " + imgData);
+				if (null != requestMap.get("img")&& !"".equals(requestMap.get("img"))) {
+					
+					List imgList = (ArrayList) requestMap.get("img");				
+					String imgData = (String) ((Map) imgList.get(0)).get("data");					
 					String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
-					System.out.println("imgSuffix = " + imgSuffix);
-
 					byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
-					System.out.println("bs = " + bs);
-
 					// 上传图片
-					intUpLoadImg = UploadOss.UploadByte("miniconch", (String) requestMap.get("recordId") + imgSuffix, bs);
-					// int ret = UploadOss.UploadFile("miniconch",
-					// file.getName(), file.getPath());					
-					intUpImgUrl = userMapper.updateImageUrl(user);
+					int ret = UploadOss.UploadByte("miniconch", (String) requestMap.get("uid")+"profilephoto" + imgSuffix, bs);
+					
+					if (ret == 0) {
+						String profilephotoUrl="http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("uid")+"_profilephoto" + imgSuffix;
+						user.setProfilephoto(profilephotoUrl);
+					}			
+					
 				}
+				userMapper.updateAllInfro(user);
 
-			}
-			
-			//更新图片url信息
-			//if()
-			
-			if (intUpUserInfro > 0 && intUpLoadImg >0 && intUpImgUrl >0) {
-				System.out.println("更新用户信息成功  intUpUserInfro=" + String.valueOf(intUpUserInfro) + ",上传图片信息成功  intUpLoadImg=" + String.valueOf(intUpLoadImg) + ",更新图片链接地址成功  intUpUserInfro=" + String.valueOf(intUpUserInfro));
-				resultMessage = "更新昵称、区域等信息成功！！";
-				resultCode = 200;
-			} else {
-				System.out.println("更新用户信息失败！！用户信息  intUpUserInfro=" + String.valueOf(intUpUserInfro) + ",上传图片信息  intUpLoadImg=" + String.valueOf(intUpLoadImg) + ",更新图片链接地址  intUpUserInfro=" + String.valueOf(intUpUserInfro));
-				resultMessage = "更新昵称、区域等信息失败！！";
-				resultCode = 210;
-			}
-			
-			/*Map<String, String> subMap = new HashMap<String, String>();
-			subMap.put("uid", uid);// id 主键信息
-			subMap.put("name", user.getName());// 姓名
-			subMap.put("nickname", user.getNickname());// 昵称
-			subMap.put("profilephoto", user.getProfilephoto());// 头像
-			subMap.put("subscribetime", user.getSubscribetime());// 注册时间
-			subMap.put("lastupdatetime", user.getLastupdatetime());// 最后一次更新时间
-			// subMap.put("password", user.getPassword());//密码
-			System.out.println("subMap: " + subMap);
-			map.put("value", subMap);*/
-		} catch (NullPointerException e) {
-			resultMessage = "数据更新失败:查询数据库无记录，为null.";
-			resultCode = 550;
-			System.out.println("Exception: " + e.getMessage());
+			}else{
+				resultMessage = SystemConst.NOT_FOUND_MESSAGE;
+				resultCode = SystemConst.NOT_FOUND;
+			}			
+
 		} catch (Exception e) {
-			resultMessage = "数据更新失败:其他异常.";
-			resultCode = 500;
-			System.out.println("Exception: " + e.getMessage());
-		} finally {
-			map.put("resultCode", resultCode);
-			map.put("resultMessage", resultMessage);
-			return map;
-		}
-
+			resultMessage = SystemConst.ERROR_MESSAGE;
+			resultCode = SystemConst.ERROR;
+			log.error(e);			
+		} 
+		map.put("resultCode", resultCode);
+		map.put("resultMessage", resultMessage);
+		return map;
 	}
+
 	/**
 	 * 录音点创建 request { "lat": "30.66667", "lng": "104.06667",
 	 * "description":"这是一个好地方", "recordId": "微信返回的录音id", "img": [ { "data":
@@ -797,6 +753,12 @@ public class CoreController extends BaseController {
 			map.put("percent", result);
 			map.put("tatalNum", tatalNum);
 			map.put("rank", rank);
+			//4、足迹国家数量
+			map.put("countryNum", footprintMapper.getCountryNumForfootprint(requestMap.get("uid").toString()));			
+			//5、足迹省份数量
+			map.put("provinceNum", footprintMapper.getProvinceNumForfootprint(requestMap.get("uid").toString()));
+			//6、足迹城市数量
+			map.put("cityNum", footprintMapper.getCityNumForfootprint(requestMap.get("uid").toString()));
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);

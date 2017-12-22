@@ -30,6 +30,13 @@ public interface UserMapper {
     })
     User findByNameAndPassword(@Param("name") String name,@Param("password") String password);
     
+    @Select("SELECT * FROM user where id=#{id} ")
+    @Results({
+    	@Result(id = true, property = "id", column = "id"),
+        @Result(property = "whatisup", column = "what's up")
+    })
+    User findById(@Param("id") String id);
+    
     @Insert("INSERT INTO user(id, name, nickname, profilephoto, subscribetime,password) VALUES(#{id}, #{name}, #{nickname}, #{profilephoto}, sysdate(),#{password})")
     int insert(@Param("id") String id, @Param("name") String name,@Param("nickname") String nickname, @Param("profilephoto") String profilephoto,@Param("password") String password);
     
@@ -41,8 +48,11 @@ public interface UserMapper {
     int updateImageUrl(User user);
     @Update("UPDATE user SET personnotes=#{personnotes} WHERE name=#{name}")
     int updatePersonNotes(User user);
-    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},personnotes=#{personnotes},lastupdatetime=#{lastupdatetime} WHERE name=#{name} and id=#{id}")
+    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},signature=#{signature},lastupdatetime=now(),gender=#{gender},profilephoto=#{profilephoto} WHERE id=#{id}")
     int updateAllInfro(User user);
+    
+    @Select("select count(*) from footprint where uid=#{uid}")
+    int getFootprintNumByUid(String uid);
 
     /*@Results({
             @Result(property = "name", column = "name"),

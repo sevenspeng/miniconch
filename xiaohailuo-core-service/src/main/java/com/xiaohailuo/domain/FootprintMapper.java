@@ -70,6 +70,32 @@ public interface FootprintMapper {
 	
 	
 	
+    /**
+     * 查询国家数量
+     * @param uid
+     * @return
+     */
+	@Select("SELECT count(distinct(t.country)) FROM footprint t where t.uid=#{id}")
+	int getCountryNumForfootprint(@Param("id") String uid);
+	
+    /**
+     * 查询省份数量
+     * @param uid
+     * @return
+     */
+	@Select("SELECT count(distinct(t.province)) FROM footprint t where t.uid=#{id}")
+	int getProvinceNumForfootprint(@Param("id") String uid);
+	
+	
+    /**
+     * 查询城市数量
+     * @param uid
+     * @return
+     */
+	@Select("SELECT count(distinct(t.city)) FROM footprint t where t.uid=#{id}")
+	int getCityNumForfootprint(@Param("id") String uid);
+	
+	
 	
 	
 	@Select("SELECT * FROM record t WHERE t.id = #{id}")
