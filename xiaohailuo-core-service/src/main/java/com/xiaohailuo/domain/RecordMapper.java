@@ -23,6 +23,23 @@ public interface RecordMapper {
 
 	})
 	List<Record> findAllRecordByLnglat(@Param("lat") BigDecimal lat, @Param("lng") BigDecimal lng);
+	
+	
+	@Select("SELECT t.id as recordID,t.title,t.icon,t.recordFile,u.nickname,t.duration,u.profilephoto,t.description,t.replyCount,t.likeCount,t.date  FROM record t,user u WHERE  t.lng =#{lng} AND t.lat =#{lat} and t.uid=u.id GROUP BY t.lng,t.lat")
+	@Results({
+			@Result(property = "recordID", column = "recordID", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "title", column = "title", javaType = String.class, jdbcType = JdbcType.VARCHAR),		
+			@Result(property = "icon", column = "icon", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "profilephoto", column = "profilephoto", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "nickname", column = "nickname", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "duration", column = "duration", javaType = Integer.class, jdbcType = JdbcType.INTEGER),			
+			@Result(property = "recordFile", column = "recordFile", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "description", column = "description", javaType = String.class, jdbcType = JdbcType.VARCHAR),		
+			@Result(property = "replyCount", column = "replyCount", javaType = String.class, jdbcType = JdbcType.INTEGER),
+			@Result(property = "likeCount", column = "likeCount", javaType = String.class, jdbcType = JdbcType.INTEGER),
+			@Result(property = "recordDate", column = "date", javaType = String.class, jdbcType = JdbcType.TIMESTAMP)			
+			})
+	List<Map<String, Object>> getRecordListByPosition(@Param("lat") BigDecimal lat, @Param("lng") BigDecimal lng);
 
 	@Select("SELECT * FROM record t WHERE t.id = #{id}")
 	@Results({ @Result(property = "isOfficial", column = "officialflag"),
@@ -41,9 +58,15 @@ public interface RecordMapper {
 	 * latNortheast, @Param("lngSouthwest") BigDecimal
 	 * lngSouthwest, @Param("latSouthwest") BigDecimal latSouthwest);
 	 */
-	@Select("SELECT t.lng,t.lat,COUNT(t.id) as recordNum FROM record t WHERE t.lng >= #{lngSouthwest} AND t.lng <= #{lngNortheast} AND t.lat >= #{latSouthwest} AND t.lat <= #{latNortheast} GROUP BY t.lng,t.lat")
+	@Select("SELECT t.id as recordID,t.lng,t.lat,t.title,t.officialflag,t.icon,t.recordFile,u.nickname,t.duration  FROM record t,user u WHERE t.lng >= #{lngSouthwest} AND t.lng <= #{lngNortheast} AND t.lat >= #{latSouthwest} AND t.lat <= #{latNortheast} and t.uid=u.id")
 	@Results({ @Result(property = "lng", column = "lng"), @Result(property = "lng", column = "lng"),
-			@Result(property = "recordNum", column = "recordNum", javaType = Long.class, jdbcType = JdbcType.INTEGER) })
+			@Result(property = "recordID", column = "recordID", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "title", column = "title", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "isOfficial", column = "officialflag", javaType = String.class, jdbcType = JdbcType.CHAR),
+			@Result(property = "icon", column = "icon", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "recordFile", column = "recordFile", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "nickname", column = "nickname", javaType = String.class, jdbcType = JdbcType.VARCHAR),
+			@Result(property = "duration", column = "duration", javaType = Integer.class, jdbcType = JdbcType.INTEGER)})
 	List<Map<String, Object>> findAllRecordByCoordinateScope(@Param("lngNortheast") BigDecimal lngNortheast,
 			@Param("latNortheast") BigDecimal latNortheast, @Param("lngSouthwest") BigDecimal lngSouthwest,
 			@Param("latSouthwest") BigDecimal latSouthwest);

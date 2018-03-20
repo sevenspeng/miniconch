@@ -92,7 +92,7 @@ public class CoreController extends BaseController {
 	private static final ConcurrentMap<String, Integer> statusMachine = new ConcurrentHashMap<String, Integer>();
 
 	/**
-	 * 根据经纬度获取录音
+	 * 根据经纬度获取录音（废弃）
 	 * 
 	 * @param coordinates
 	 * @return
@@ -155,6 +155,29 @@ public class CoreController extends BaseController {
 		Root rootObject = new Root(resultCode, resultMessage, arrayList);
 
 		return /* map */rootObject;
+
+	}
+	
+	/**
+	 * 根据经纬度获取录音（废弃）
+	 * 
+	 * @param coordinates
+	 * @return
+	 */
+	@RequestMapping(value = "/query/recordList", method = RequestMethod.POST)
+	public Root getRecordListByPosition(@RequestBody Coordinate coordinates) {
+			int resultCode = 200;
+		String resultMessage = "接口调用正常返回";
+		List<Map<String, Object>> arrayList = recordMapper.getRecordListByPosition(new BigDecimal(coordinates.getLat()),
+				new BigDecimal(coordinates.getLng()));
+
+		if (arrayList == null || arrayList.isEmpty()) {
+			resultCode = 210;
+			resultMessage = "未查询到符合条件的数据";
+		}
+		Root rootObject = new Root(resultCode, resultMessage, arrayList);
+
+		return rootObject;
 
 	}
 
@@ -661,7 +684,7 @@ public class CoreController extends BaseController {
 		 * citycode 为空, url 为空
 		 **/
 		String id = UUIDGenerator.getUUID();// record表里面的id字段值
-		String title = "", coordinates = "", summary = "", poi = "", citycode = "", url = "";
+		String coordinates = "", summary = "", poi = "", citycode = "", url = "";
 		BigDecimal lat = new BigDecimal((String) requestMap.get("lat"));
 		BigDecimal lng = new BigDecimal((String) requestMap.get("lng"));
 		String officialflag = "N", uid = "2109c7de-8609-11e6-b6d3-782bcb720a83",
@@ -674,6 +697,7 @@ public class CoreController extends BaseController {
 		System.out.println("recordfile = " + recordfile);
 		System.out.println("description = " + description);
 		int replyCount = 0, likeCount = 0;
+		String title = (String) requestMap.get("title"); 
 		int result = recordMapper.InsertNewRecord(id, title, uid, coordinates, lat, lng, officialflag, summary, icon,
 				recordfile, replyCount, likeCount, description, poi, citycode, url);
 
