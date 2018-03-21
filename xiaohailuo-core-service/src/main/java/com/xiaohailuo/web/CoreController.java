@@ -188,41 +188,21 @@ public class CoreController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/query/record/detail/{recordId}", method = RequestMethod.GET)
-	// public Map<String,Object> getDetailByRecordId(@PathVariable String
-	// recordId){
 	public Map<String, Object> getDetailByRecordId(@PathVariable("recordId") String id) {
 		// id
 		System.out.println(String.format("%s: %s", "id", id));
 		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
-
-		Record record = recordMapper.findRecordDetailById(id);
-
-		System.out.println("getDetailByRecordId 原始record: " + record);
 		List<CommentInfo> arrayList = jointQueryMapper.findCommentsByRid(id);
-
-		record.setComments(arrayList);
-		record.setReplyCount(arrayList.size());
-
-		System.out.println("getDetailByRecordId comments: " + arrayList.size());
-		int likeCount = likeMapper.findLikeCountByRid(id);
-
-		System.out.println("getDetailByRecordId likeCount: " + likeCount);
-		record.setLikeCount(likeCount);
-
-		System.out.println("getDetailByRecordId 最终record: " + record);
-
-		// if (arrayList == null || arrayList.size() == 0) {
-		if (record == null || "".equals(record)) {
+		System.out.println("getDetailByRecordId comments: " + arrayList.size());	
+		if (arrayList == null || arrayList.size() == 0) {	
 			resultCode = 210;
 			resultMessage = "未查询到符合条件的数据";
 		}
-
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("resultCode", resultCode);
 		map.put("resultMessage", resultMessage);
-		map.put("value", record);
-
+		map.put("value", arrayList);
 		return map;
 	}
 
