@@ -868,4 +868,5 @@ public class CoreController extends BaseController {
 		map.put("value", footPrintList);
 		return map;
 	}*/
+	
 }
