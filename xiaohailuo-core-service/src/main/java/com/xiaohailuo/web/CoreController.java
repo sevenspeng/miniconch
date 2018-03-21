@@ -159,7 +159,7 @@ public class CoreController extends BaseController {
 	}
 	
 	/**
-	 * 根据经纬度获取录音（废弃）
+	 * 根据经纬度获取录音
 	 * 
 	 * @param coordinates
 	 * @return

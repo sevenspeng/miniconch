@@ -34,7 +34,7 @@ public class FilterConfiguration {
 		// 是否自动注册 false 取消Filter的自动注册
 		//registration.setEnabled(false);
 		
-		// 过滤器顺序
+		// 过滤器顺序 
 		registration.setOrder(1);
 		return registration;
 	}
