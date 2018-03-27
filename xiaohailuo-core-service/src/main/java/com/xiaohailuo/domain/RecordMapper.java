@@ -25,8 +25,9 @@ public interface RecordMapper {
 	List<Record> findAllRecordByLnglat(@Param("lat") BigDecimal lat, @Param("lng") BigDecimal lng);
 	
 	 
-	@Select("SELECT t.id as recordID,t.title,t.icon,t.recordFile,u.nickname,t.duration,u.profilephoto,t.description,t.replyCount,t.likeCount,t.date  FROM record t,user u WHERE  t.lng =#{lng} AND t.lat =#{lat} and t.uid=u.id GROUP BY t.lng,t.lat")
+	@Select("SELECT t.uid,t.id as recordID,t.title,t.icon,t.recordFile,u.nickname,t.duration,u.profilephoto,t.description,t.replyCount,t.likeCount,t.date  FROM record t,user u WHERE  t.lng =#{lng} AND t.lat =#{lat} and t.uid=u.id GROUP BY t.lng,t.lat")
 	@Results({
+			@Result(property = "uid", column = "uid", javaType = String.class, jdbcType = JdbcType.VARCHAR),
 			@Result(property = "recordID", column = "recordID", javaType = String.class, jdbcType = JdbcType.VARCHAR),
 			@Result(property = "title", column = "title", javaType = String.class, jdbcType = JdbcType.VARCHAR),		
 			@Result(property = "icon", column = "icon", javaType = String.class, jdbcType = JdbcType.VARCHAR),
