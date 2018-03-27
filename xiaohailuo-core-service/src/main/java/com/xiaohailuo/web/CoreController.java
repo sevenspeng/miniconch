@@ -591,9 +591,9 @@ public class CoreController extends BaseController {
 		List imgList = (ArrayList) requestMap.get("img");
 		System.out.println("imgList = " + imgList);
 		String imgData = (String) ((Map) imgList.get(0)).get("data");
-		System.out.println("imgData = " + imgData);
+		//System.out.println("imgData = " + imgData);
 		String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
-		System.out.println("imgSuffix = " + imgSuffix);
+		//System.out.println("imgSuffix = " + imgSuffix);
 		// String filePath = urlImg.getPath() + "/examples/img/" + (String)
 		// requestMap.get("recordId") + "." + imgSuffix;
 		// String filePath = urlImg + (String) requestMap.get("recordId") + "."
