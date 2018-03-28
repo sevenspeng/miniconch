@@ -55,6 +55,9 @@ import com.xiaohailuo.webchat.util.Base64ImgEncodeAndDecode;
 import com.xiaohailuo.webchat.util.UploadOss;
 
 import Decoder.BASE64Decoder;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.mp3.MP3AudioHeader;
 
 //import scala.annotation.implicitNotFound;
 
@@ -222,6 +225,10 @@ public class CoreController extends BaseController {
 
 		if (result == 1) {
 			resultCode = 200;
+			String id = (String) comment.getRid();
+			int resultUpdate = recordMapper.updateReplyCount(id);
+
+			log.info("updateReplyCount result---->"+ resultUpdate);
 		} else {
 			resultCode = 510;
 			resultMessage = "提交失败";
@@ -564,8 +571,7 @@ public class CoreController extends BaseController {
 		String armFileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".amr");
 		
 		String mp3FileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".mp3");
-		//转换录音文件格式
-		File mp3File = new File(mp3FileName);		
+		//转换录音文件格式	
 		//ChangeAudioFormat.changeToMp3(amrFile, mp3File);
 		try {
 			try {
@@ -580,7 +586,20 @@ public class CoreController extends BaseController {
 		UploadOss.UploadFile("miniconch",  (String) requestMap.get("recordId")  + ".mp3",mp3FileName);
 		log.info("UploadFileToOSS success---->"+mp3FileName);	
 		
+		// 获取mp3录音时长
+				int duration = 0;
+				try {
+					File mp3File = new File(mp3FileName);	
+					MP3File f = (MP3File)AudioFileIO.read(mp3File);
+					MP3AudioHeader audioHeader = (MP3AudioHeader)f.getAudioHeader();
+					duration = (int)Math.round(audioHeader.getPreciseTrackLength());
+					log.info("Get Mp3File duration success---->"+ duration + "seconds");
 
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					log.info("Get Mp3File duration fail---->");
+					e.printStackTrace();		
+				}
 		
 
 		// 上传图片
@@ -589,7 +608,7 @@ public class CoreController extends BaseController {
 
 		java.net.URL urlImg = CoreController.class.getResource("../");
 		List imgList = (ArrayList) requestMap.get("img");
-		System.out.println("imgList = " + imgList);
+		//System.out.println("imgList = " + imgList);
 		String imgData = (String) ((Map) imgList.get(0)).get("data");
 		//System.out.println("imgData = " + imgData);
 		String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
@@ -667,7 +686,7 @@ public class CoreController extends BaseController {
 		String coordinates = "", summary = "", poi = "", citycode = "", url = "";
 		BigDecimal lat = new BigDecimal((String) requestMap.get("lat"));
 		BigDecimal lng = new BigDecimal((String) requestMap.get("lng"));
-		String officialflag = "N", uid = "2109c7de-8609-11e6-b6d3-782bcb720a83",
+		String officialflag = "N", uid =(String) requestMap.get("uid") ,
 				icon = "http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("recordId")
 						+ imgSuffix,
 				// recordfile = "http://www.miniconch.cn:8080/resource/audio/" +
@@ -679,7 +698,7 @@ public class CoreController extends BaseController {
 		int replyCount = 0, likeCount = 0;
 		String title = (String) requestMap.get("title"); 
 		int result = recordMapper.InsertNewRecord(id, title, uid, coordinates, lat, lng, officialflag, summary, icon,
-				recordfile, replyCount, likeCount, description, poi, citycode, url);
+				recordfile, replyCount, likeCount, description, poi, citycode, url, duration);
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		int resultCode = 200;
@@ -750,19 +769,31 @@ public class CoreController extends BaseController {
 			//1、查询总用户数
 			int tatalNum=footprintMapper.getUserTatalNum();
 			//2、查询用户排名
-			int rank=footprintMapper.getUserRank(requestMap.get("uid").toString());
-			//3、计算打败人数百分百
-			double pkNum=1.0*100*(tatalNum-rank)/tatalNum;
-			String result = String .format("%.2f",pkNum);
-			map.put("percent", result);
+			Integer rank=footprintMapper.getUserRank(requestMap.get("uid").toString());
+			// 3、计算打败人数百分百
+			if (null != rank) {
+				double pkNum = 1.0 * 100 * (tatalNum - rank) / tatalNum;
+				String result = String.format("%.2f", pkNum);
+				map.put("percent", result);
+
+				map.put("rank", rank);
+				// 4、足迹国家数量
+				map.put("countryNum", footprintMapper.getCountryNumForfootprint(requestMap.get("uid").toString()));
+				// 5、足迹省份数量
+				map.put("provinceNum", footprintMapper.getProvinceNumForfootprint(requestMap.get("uid").toString()));
+				// 6、足迹城市数量
+				map.put("cityNum", footprintMapper.getCityNumForfootprint(requestMap.get("uid").toString()));
+			} else {
+				map.put("percent", 0);
+				map.put("rank", 0);
+				// 4、足迹国家数量
+				map.put("countryNum", 0);
+				// 5、足迹省份数量
+				map.put("provinceNum", 0);
+				// 6、足迹城市数量
+				map.put("cityNum", 0);
+			}
 			map.put("tatalNum", tatalNum);
-			map.put("rank", rank);
-			//4、足迹国家数量
-			map.put("countryNum", footprintMapper.getCountryNumForfootprint(requestMap.get("uid").toString()));			
-			//5、足迹省份数量
-			map.put("provinceNum", footprintMapper.getProvinceNumForfootprint(requestMap.get("uid").toString()));
-			//6、足迹城市数量
-			map.put("cityNum", footprintMapper.getCityNumForfootprint(requestMap.get("uid").toString()));
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);

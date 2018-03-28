@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.type.JdbcType;
 
 
@@ -72,13 +73,18 @@ public interface RecordMapper {
 			@Param("latNortheast") BigDecimal latNortheast, @Param("lngSouthwest") BigDecimal lngSouthwest,
 			@Param("latSouthwest") BigDecimal latSouthwest);
 
-	@Insert("INSERT INTO record(id,title,uid,coordinates,lat,lng,officialflag, summary,icon,recordfile,replyCount,likeCount,description,date,poi,citycode,url) VALUES(#{id}, #{title}, #{uid},#{coordinates},#{lat},#{lng},#{officialflag},#{summary},#{icon},#{recordfile},#{replyCount},#{likeCount},#{description},sysdate(),#{poi},#{citycode},#{url})")
+
+	@Insert("INSERT INTO record(id,title,uid,coordinates,lat,lng,officialflag, summary,icon,recordfile,replyCount,likeCount,description,date,poi,citycode,url,duration) VALUES(#{id}, #{title}, #{uid},#{coordinates},#{lat},#{lng},#{officialflag},#{summary},#{icon},#{recordfile},#{replyCount},#{likeCount},#{description},sysdate(),#{poi},#{citycode},#{url},#{duration})")
 	int InsertNewRecord(@Param("id") String id, @Param("title") String title,@Param("uid") String uid,
 			@Param("coordinates") String coordinates, @Param("lat") BigDecimal lat, @Param("lng") BigDecimal lng,
 			@Param("officialflag") String officialflag, @Param("summary") String summary,
 			@Param("icon") String icon, @Param("recordfile") String recordfile,@Param("replyCount") int replyCount,@Param("likeCount") int likeCount,
 			@Param("description") String description, @Param("poi") String poi, @Param("citycode") String citycode,
-			@Param("url") String url);
+			@Param("url") String url , @Param("duration") int duration);
+	
+	@Update("UPDATE record SET replyCount=replyCount + 1 WHERE id=#{id}")
+	int updateReplyCount(@Param("id") String id);	
+	
 	// @Select("SELECT * FROM USER WHERE NAME = #{name}")
 	// User findByName(@Param("name") String name);
 	//
