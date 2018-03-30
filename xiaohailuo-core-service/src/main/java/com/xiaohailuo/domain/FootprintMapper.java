@@ -52,13 +52,12 @@ public interface FootprintMapper {
 	
 	
     /**
-     * 根据用户数量
+     * 查询用户数量
      * @param uid
      * @return
      */
 	@Select("SELECT count(*) FROM user")
-	int getUserTatalNum();
-	
+	int getUserTatalNum();	
 	
     /**
      * 查询足记数量排名
@@ -96,6 +95,13 @@ public interface FootprintMapper {
 	int getCityNumForfootprint(@Param("id") String uid);
 	
 	
+    /**
+     * 查询足迹点总数量
+     * @param uid
+     * @return
+     */
+	@Select("SELECT count(*) FROM footprint t where t.uid=#{id}")
+	int getTotalNumForfootprint(@Param("id") String uid);
 	
 	
 	@Select("SELECT * FROM record t WHERE t.id = #{id}")

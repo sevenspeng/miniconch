@@ -5,14 +5,29 @@ import java.util.Date;
 
 public class Comment {
 	SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
+
 	private int id;
-	private String rid;
+	private String recordId;
 	private String uid;
+	private String replyUid;
 	private String comment;
+
+	@Override
+	public String toString() {
+		return "Comment [dateFormater=" + dateFormater + ", id=" + id + ", recordId=" + recordId + ", uid=" + uid
+				+ ", replyUid=" + replyUid + ", comment=" + comment + ", date=" + date + "]";
+	}
+
 	private Date date;
-	
-	
+
+	public SimpleDateFormat getDateFormater() {
+		return dateFormater;
+	}
+
+	public void setDateFormater(SimpleDateFormat dateFormater) {
+		this.dateFormater = dateFormater;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -21,12 +36,12 @@ public class Comment {
 		this.id = id;
 	}
 
-	public String getRid() {
-		return rid;
+	public String getRecordId() {
+		return recordId;
 	}
 
-	public void setRid(String rid) {
-		this.rid = rid;
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
 	}
 
 	public String getUid() {
@@ -35,6 +50,14 @@ public class Comment {
 
 	public void setUid(String uid) {
 		this.uid = uid;
+	}
+
+	public String getReplyUid() {
+		return replyUid;
+	}
+
+	public void setReplyUid(String replyUid) {
+		this.replyUid = replyUid;
 	}
 
 	public String getComment() {
@@ -51,11 +74,6 @@ public class Comment {
 
 	public void setDate(Date date) {
 		this.date = date;
-	}
-
-	@Override
-	public String toString() {
-		return "Comments [id=" + id + ", rid=" + rid + ", uid=" + uid + ", comment=" + comment + ", date=" + date + "]";
 	}
 
 }

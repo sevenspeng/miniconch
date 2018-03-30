@@ -160,7 +160,7 @@ public class CoreController extends BaseController {
 		return /* map */rootObject;
 
 	}
-	
+
 	/**
 	 * 根据经纬度获取录音
 	 * 
@@ -169,7 +169,7 @@ public class CoreController extends BaseController {
 	 */
 	@RequestMapping(value = "/query/recordList", method = RequestMethod.POST)
 	public Root getRecordListByPosition(@RequestBody Coordinate coordinates) {
-			int resultCode = 200;
+		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
 		List<Map<String, Object>> arrayList = recordMapper.getRecordListByPosition(new BigDecimal(coordinates.getLat()),
 				new BigDecimal(coordinates.getLng()));
@@ -197,8 +197,8 @@ public class CoreController extends BaseController {
 		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
 		List<CommentInfo> arrayList = jointQueryMapper.findCommentsByRid(id);
-		System.out.println("getDetailByRecordId comments: " + arrayList.size());	
-		if (arrayList == null || arrayList.size() == 0) {	
+		System.out.println("getDetailByRecordId comments: " + arrayList.size());
+		if (arrayList == null || arrayList.size() == 0) {
 			resultCode = 210;
 			resultMessage = "未查询到符合条件的数据";
 		}
@@ -221,17 +221,18 @@ public class CoreController extends BaseController {
 		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
 
-		int result = commentMapper.insert(comment.getRid(), comment.getUid(), comment.getComment());
+		int result = commentMapper.insert(comment.getRecordId(), comment.getReplyUid(), comment.getComment());
 
+		// 更新评论数
 		if (result == 1) {
-			resultCode = 200;
-			String id = (String) comment.getRid();
+			// 更新评论数
+			String id = (String) comment.getRecordId();
 			int resultUpdate = recordMapper.updateReplyCount(id);
+			log.info("updateReplyCount result---->" + resultUpdate);
+			resultUpdate = recordMapper.addMessage(comment.getRecordId(), comment.getUid(), comment.getReplyUid(), "1",
+					comment.getComment());
+			log.info("addMessage result---->" + resultUpdate);
 
-			log.info("updateReplyCount result---->"+ resultUpdate);
-		} else {
-			resultCode = 510;
-			resultMessage = "提交失败";
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -253,10 +254,11 @@ public class CoreController extends BaseController {
 		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
 
-		int result = likeMapper.insert(like.getRecordId(), like.getuId());
+		int result = likeMapper.insert(like.getRecordId(), like.getUid());
 
 		if (result == 1) {
-			resultCode = 200;
+			int resultUpdate = recordMapper.addMessage(like.getRecordId(), like.getUid(), like.getReplyUid(), "2", "");
+			log.info("addMessage result---->" + resultUpdate);
 		} else {
 			resultCode = 510;
 			resultMessage = "提交失败";
@@ -400,6 +402,7 @@ public class CoreController extends BaseController {
 
 		return map;
 	}
+
 	/**
 	 * 用户注册 request: { "mobile": "13568836650", "password": "123456" }
 	 *
@@ -422,14 +425,16 @@ public class CoreController extends BaseController {
 			System.out.println("uid==" + uid);
 		} else {
 			uid = UUID.randomUUID().toString();
-			//int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("mobile"), "头像");
-			//user表： mobile-name 手机号码
-			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),requestMap.get("profilephoto"),requestMap.get("password"));
-			
+			// int result = userMapper.insert(uid, requestMap.get("mobile"),
+			// requestMap.get("mobile"), "头像");
+			// user表： mobile-name 手机号码
+			int result = userMapper.insert(uid, requestMap.get("mobile"), requestMap.get("nickname"),
+					requestMap.get("profilephoto"), requestMap.get("password"));
+
 			System.out.println("uid==" + uid);
 			System.out.println("result==" + result);
 			// 注册成功后置为已登陆
-			//statusMachine.put(requestMap.get("mobile"), 1);
+			// statusMachine.put(requestMap.get("mobile"), 1);
 		}
 
 		Map<String, String> subMap = new HashMap<String, String>();
@@ -485,13 +490,10 @@ public class CoreController extends BaseController {
 	}
 
 	/**
-	 * 更新用户信息 request: { "uid": "73c23999-36b2-413f-a2af-06d1099dcf9f", "img": "图片信息","image_url": "头像url", "country": "国籍","province": "省份","city": "城市","nickname": "昵称"}
-	 * updateFlag    含义
-	 *          1             更新头像             image_url
-	 *          2             更新昵称             nickname
-	 *          3             更新个性签名   personnotes
-	 *          4             更新籍贯            country、province、city
-	 *          5            更新1-4项所有信息
+	 * 更新用户信息 request: { "uid": "73c23999-36b2-413f-a2af-06d1099dcf9f", "img":
+	 * "图片信息","image_url": "头像url", "country": "国籍","province": "省份","city":
+	 * "城市","nickname": "昵称"} updateFlag 含义 1 更新头像 image_url 2 更新昵称 nickname 3
+	 * 更新个性签名 personnotes 4 更新籍贯 country、province、city 5 更新1-4项所有信息
 	 * 
 	 */
 	@RequestMapping(value = "/update/user", method = RequestMethod.POST)
@@ -514,37 +516,38 @@ public class CoreController extends BaseController {
 				if (null != requestMap.get("signature") && !"".equals(requestMap.get("signature")))
 					user.setSignature(requestMap.get("signature").toString());
 				if (null != requestMap.get("gender") && !"".equals(requestMap.get("gender")))
-					user.setGender(requestMap.get("gender").toString());			
-				
-				
+					user.setGender(requestMap.get("gender").toString());
+
 				// 判断图片信息是佛有值
-				if (null != requestMap.get("img")&& !"".equals(requestMap.get("img"))) {
-					
-					List imgList = (ArrayList) requestMap.get("img");				
-					String imgData = (String) ((Map) imgList.get(0)).get("data");					
+				if (null != requestMap.get("img") && !"".equals(requestMap.get("img"))) {
+
+					List imgList = (ArrayList) requestMap.get("img");
+					String imgData = (String) ((Map) imgList.get(0)).get("data");
 					String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
 					byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
 					// 上传图片
-					int ret = UploadOss.UploadByte("miniconch", (String) requestMap.get("uid")+"profilephoto" + imgSuffix, bs);
-					
+					int ret = UploadOss.UploadByte("miniconch",
+							(String) requestMap.get("uid") + "profilephoto" + imgSuffix, bs);
+
 					if (ret == 0) {
-						String profilephotoUrl="http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("uid")+"_profilephoto" + imgSuffix;
+						String profilephotoUrl = "http://miniconch.oss-cn-shenzhen.aliyuncs.com/"
+								+ (String) requestMap.get("uid") + "_profilephoto" + imgSuffix;
 						user.setProfilephoto(profilephotoUrl);
-					}			
-					
+					}
+
 				}
 				userMapper.updateAllInfro(user);
 
-			}else{
+			} else {
 				resultMessage = SystemConst.NOT_FOUND_MESSAGE;
 				resultCode = SystemConst.NOT_FOUND;
-			}			
+			}
 
 		} catch (Exception e) {
 			resultMessage = SystemConst.ERROR_MESSAGE;
 			resultCode = SystemConst.ERROR;
-			log.error(e);			
-		} 
+			log.error(e);
+		}
 		map.put("resultCode", resultCode);
 		map.put("resultMessage", resultMessage);
 		return map;
@@ -558,109 +561,64 @@ public class CoreController extends BaseController {
 	 */
 	@RequestMapping(value = "/add/record/position", method = RequestMethod.POST)
 	public Map<String, Object> setRecordingPosition(@RequestBody Map<String, Object> requestMap) {
-		
-		String accessToken = AccessTokenInWebChat.getAccessToken();		
-		String baseUrl ="http://file.api.weixin.qq.com/cgi-bin/media/get";		
-		String recordUrl = String.format("%s?access_token=%s&media_id=%s", baseUrl, accessToken,requestMap.get("recordId")); 
-		
-		String fileName=(String)requestMap.get("recordId")+".amr";
-		//下载录音文件
-		String downloadDir=System.getProperty("user.dir") + "/file/record";		
-		File amrFile=HttpConnectionUtil.downloadFile(recordUrl, downloadDir ,fileName);			
-		log.info("downloadFile success---->"+fileName);
-		String armFileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".amr");
-		
-		String mp3FileName=String.format("%s%s%s%s",System.getProperty("user.dir"),"/file/record/",(String)requestMap.get("recordId"),".mp3");
-		//转换录音文件格式	
-		//ChangeAudioFormat.changeToMp3(amrFile, mp3File);
+
+		String accessToken = AccessTokenInWebChat.getAccessToken();
+		String baseUrl = "http://file.api.weixin.qq.com/cgi-bin/media/get";
+		String recordUrl = String.format("%s?access_token=%s&media_id=%s", baseUrl, accessToken,
+				requestMap.get("recordId"));
+
+		String fileName = (String) requestMap.get("recordId") + ".amr";
+		// 下载录音文件
+		String downloadDir = System.getProperty("user.dir") + "/file/record";
+		File amrFile = HttpConnectionUtil.downloadFile(recordUrl, downloadDir, fileName);
+		log.info("downloadFile success---->" + fileName);
+		String armFileName = String.format("%s%s%s%s", System.getProperty("user.dir"), "/file/record/",
+				(String) requestMap.get("recordId"), ".amr");
+
+		String mp3FileName = String.format("%s%s%s%s", System.getProperty("user.dir"), "/file/record/",
+				(String) requestMap.get("recordId"), ".mp3");
+		// 转换录音文件格式
+		// ChangeAudioFormat.changeToMp3(amrFile, mp3File);
 		try {
 			try {
 				ChangeAudioFormat.amr2mp3(armFileName, mp3FileName);
-			} catch (InterruptedException e) {				
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		} catch (IOException e) {			
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		log.info("changeAudioFormat success---->"+mp3FileName);		
-		UploadOss.UploadFile("miniconch",  (String) requestMap.get("recordId")  + ".mp3",mp3FileName);
-		log.info("UploadFileToOSS success---->"+mp3FileName);	
-		
+		log.info("changeAudioFormat success---->" + mp3FileName);
+		UploadOss.UploadFile("miniconch", (String) requestMap.get("recordId") + ".mp3", mp3FileName);
+		log.info("UploadFileToOSS success---->" + mp3FileName);
+
 		// 获取mp3录音时长
-				int duration = 0;
-				try {
-					File mp3File = new File(mp3FileName);	
-					MP3File f = (MP3File)AudioFileIO.read(mp3File);
-					MP3AudioHeader audioHeader = (MP3AudioHeader)f.getAudioHeader();
-					duration = (int)Math.round(audioHeader.getPreciseTrackLength());
-					log.info("Get Mp3File duration success---->"+ duration + "seconds");
+		int duration = 0;
+		try {
+			File mp3File = new File(mp3FileName);
+			MP3File f = (MP3File) AudioFileIO.read(mp3File);
+			MP3AudioHeader audioHeader = (MP3AudioHeader) f.getAudioHeader();
+			duration = (int) Math.round(audioHeader.getPreciseTrackLength());
+			log.info("Get Mp3File duration success---->" + duration + "seconds");
 
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					log.info("Get Mp3File duration fail---->");
-					e.printStackTrace();		
-				}
-		
-
-		// 上传图片
-		// BufferedInputStream in = new BufferedInputStream(new
-		// FileInputStream("F://project//test1.jpg"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			log.info("Get Mp3File duration fail---->");
+			e.printStackTrace();
+		}
 
 		java.net.URL urlImg = CoreController.class.getResource("../");
 		List imgList = (ArrayList) requestMap.get("img");
-		//System.out.println("imgList = " + imgList);
+		// System.out.println("imgList = " + imgList);
 		String imgData = (String) ((Map) imgList.get(0)).get("data");
-		//System.out.println("imgData = " + imgData);
+		// System.out.println("imgData = " + imgData);
 		String imgSuffix = (String) ((Map) imgList.get(0)).get("suffix");
-		//System.out.println("imgSuffix = " + imgSuffix);
-		// String filePath = urlImg.getPath() + "/examples/img/" + (String)
-		// requestMap.get("recordId") + "." + imgSuffix;
-		// String filePath = urlImg + (String) requestMap.get("recordId") + "."
-		// + imgSuffix;
-
-		// File file = new File(urlImg + (String) requestMap.get("recordId") +
-		// imgSuffix);
-		/*
-		 * File file = new File("//" + (String) requestMap.get("recordId") +
-		 * imgSuffix);
-		 * 
-		 * System.out.println("file path = " + file.getPath());
-		 * 
-		 * if(!file.exists()){
-		 * 
-		 * try{ System.out.println("file 不存在,重新创建"); file.createNewFile(); }
-		 * catch(IOException e){ System.out.println("file 不存在,重新创建失败");
-		 * e.printStackTrace(); }
-		 * 
-		 * }
-		 */
-
-		/*
-		 * System.out.println("file can read  = " + file.canRead());
-		 * System.out.println("file can write  = " + file.canWrite());
-		 */
-
-		/*
-		 * System.out.println("before file length = " + file.length());
-		 * Base64ImgEncodeAndDecode.ImgDecode(imgData, file);
-		 * System.out.println("after file length = " + file.length());
-		 */
-		/*
-		 * try { BASE64Decoder d = new BASE64Decoder(); byte[] bs =
-		 * d.decodeBuffer(imgData); FileOutputStream os = new
-		 * FileOutputStream(filePath); os.write(bs); os.close(); } catch
-		 * (FileNotFoundException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated
-		 * catch block e.printStackTrace(); }
-		 */
 
 		byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
 		System.out.println("bs = " + bs);
 
 		// 上传图片
 		int ret = UploadOss.UploadByte("miniconch", (String) requestMap.get("recordId") + imgSuffix, bs);
-		// int ret = UploadOss.UploadFile("miniconch", file.getName(),
-		// file.getPath());
 
 		if (ret == 0) {
 			System.out.println("文件上传OSS成功！！ ret = " + ret);
@@ -668,35 +626,22 @@ public class CoreController extends BaseController {
 			System.out.println("文件上传OSS失败！！ ret = " + ret);
 		}
 
-		// File file = new File(filePath);
-		// 删除临时文件
-		/*
-		 * if (file.delete()) { System.out.println(file.getName() +
-		 * "is deleted"); } else { System.out.println("Delete failed."); }
-		 */
-
-		// 将文字描述、摘要、图片名称、微信录音名称插入到mysql数据库
-		/**
-		 * title为空 coordinates为空 lat lng, officialflag为N, uid为固定值 summary 为空,
-		 * icon 图片名称.jpg(图片路径+recordID+.图片后缀), recordfile 语音路径+recordID+.mp3,
-		 * replyCount 默认为0, likeCount 默认为0, description 传递, date 默认值, poi 为空,
-		 * citycode 为空, url 为空
-		 **/
 		String id = UUIDGenerator.getUUID();// record表里面的id字段值
 		String coordinates = "", summary = "", poi = "", citycode = "", url = "";
 		BigDecimal lat = new BigDecimal((String) requestMap.get("lat"));
 		BigDecimal lng = new BigDecimal((String) requestMap.get("lng"));
-		String officialflag = "N", uid =(String) requestMap.get("uid") ,
+		String officialflag = "N", uid = (String) requestMap.get("uid"),
 				icon = "http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("recordId")
 						+ imgSuffix,
 				// recordfile = "http://www.miniconch.cn:8080/resource/audio/" +
 				// (String)requestMap.get("recordId") + ".mp3" ,
-		recordfile =  "http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("recordId")+ ".mp3",
-		description = (String) requestMap.get("description");
+				recordfile = "http://miniconch.oss-cn-shenzhen.aliyuncs.com/" + (String) requestMap.get("recordId")
+						+ ".mp3",
+				description = (String) requestMap.get("description");
 		System.out.println("recordfile = " + recordfile);
 		System.out.println("description = " + description);
 		int replyCount = 0, likeCount = 0;
-		String title = (String) requestMap.get("title"); 
+		String title = (String) requestMap.get("title");
 		int result = recordMapper.InsertNewRecord(id, title, uid, coordinates, lat, lng, officialflag, summary, icon,
 				recordfile, replyCount, likeCount, description, poi, citycode, url, duration);
 
@@ -723,7 +668,7 @@ public class CoreController extends BaseController {
 	 */
 	@RequestMapping(value = "/add/footprint", method = RequestMethod.POST)
 
-		public Map<String, Object> addFootprint11(@RequestBody Footprint footprint) {
+	public Map<String, Object> addFootprint11(@RequestBody Footprint footprint) {
 		log.info("进入新增足迹 addFootprint");
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -741,10 +686,10 @@ public class CoreController extends BaseController {
 				// 判断时间
 				if (nowTime.getTime() - lastFootprint.getFootprintDate().getTime() > 120 * 1000) {
 					footprintMapper.InsertNewFootprint(footprint);
-				}else{
+				} else {
 					map.put("resultMessage", "不符合插入条件");
 				}
-			}			
+			}
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
@@ -752,6 +697,7 @@ public class CoreController extends BaseController {
 		}
 		return map;
 	}
+
 	/**
 	 * 从足迹表查询明细
 	 * 
@@ -759,20 +705,20 @@ public class CoreController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/query/footprint/rank", method = RequestMethod.POST)
-	public Map<String, Object> queryRank(@RequestBody Map<String, Object> requestMap) {	
+	public Map<String, Object> queryRank(@RequestBody Map<String, Object> requestMap) {
 		log.info("进入查询排名queryRank");
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("resultCode", SystemConst.SUCCESS);
 		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
 		try {
-			//1、查询总用户数
-			int tatalNum=footprintMapper.getUserTatalNum();
-			//2、查询用户排名
-			Integer rank=footprintMapper.getUserRank(requestMap.get("uid").toString());
+			// 1、查询总用户数
+			int tatalUserNum = footprintMapper.getUserTatalNum();
+			// 2、查询用户排名
+			Integer rank = footprintMapper.getUserRank(requestMap.get("uid").toString());
 			// 3、计算打败人数百分百
 			if (null != rank) {
-				double pkNum = 1.0 * 100 * (tatalNum - rank) / tatalNum;
+				double pkNum = 1.0 * 100 * (tatalUserNum - rank) / tatalUserNum;
 				String result = String.format("%.2f", pkNum);
 				map.put("percent", result);
 
@@ -783,6 +729,8 @@ public class CoreController extends BaseController {
 				map.put("provinceNum", footprintMapper.getProvinceNumForfootprint(requestMap.get("uid").toString()));
 				// 6、足迹城市数量
 				map.put("cityNum", footprintMapper.getCityNumForfootprint(requestMap.get("uid").toString()));
+				// 7、总足迹数
+				map.put("tatalNum", footprintMapper.getTotalNumForfootprint(requestMap.get("uid").toString()));
 			} else {
 				map.put("percent", 0);
 				map.put("rank", 0);
@@ -792,112 +740,99 @@ public class CoreController extends BaseController {
 				map.put("provinceNum", 0);
 				// 6、足迹城市数量
 				map.put("cityNum", 0);
+				// 7、总足迹数
+				map.put("tatalNum", 0);
 			}
-			map.put("tatalNum", tatalNum);
+
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
 
 		}
-		return map;		
+		return map;
 	}
-	
-	
+
 	/**
 	 * 查询某一用户的所以足迹
+	 * 
 	 * @param footprint
 	 * @return
 	 */
 	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
 	public Map<String, Object> queryAllFootprintByUid(@RequestBody Map<String, Object> requestMap) {
-		
+
 		log.info("进入查询足迹queryAllFootprintByUid");
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("resultCode", SystemConst.SUCCESS);
 		map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
-		try {			
-			List<Footprint> list=footprintMapper.findAllFootprintByUID(requestMap.get("uid").toString());	
-			List<HashMap<String,String>> dataList=new ArrayList<HashMap<String,String>>();
-			for(int i=0;i<list.size();i++){
-				HashMap<String,String> item=new HashMap<String,String>();
+		try {
+			List<Footprint> list = footprintMapper.findAllFootprintByUID(requestMap.get("uid").toString());
+			List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
+			for (int i = 0; i < list.size(); i++) {
+				HashMap<String, String> item = new HashMap<String, String>();
 				item.put("uid", list.get(i).getUid());
 				item.put("lat", list.get(i).getLat().toPlainString());
 				item.put("lng", list.get(i).getLng().toPlainString());
 				item.put("city", list.get(i).getCity());
 				item.put("province", list.get(i).getProvince());
 				item.put("country", list.get(i).getCountry());
-				item.put("footprintDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getFootprintDate()));
+				item.put("footprintDate",
+						new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(list.get(i).getFootprintDate()));
 				dataList.add(item);
 			}
-			map.put("data", dataList);		
+			map.put("data", dataList);
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);
 			map.put("resultMessage", SystemConst.ERROR_MESSAGE);
 
 		}
-		return map;				
+		return map;
 	}
 
 	/**
-	 * 从足迹表查询明细
+	 * 根据用户ID查询消息列表
 	 * 
-	 * @param comment
+	 * @param coordinates
 	 * @return
 	 */
-	/*
-	@RequestMapping(value = "/query/footprint/list", method = RequestMethod.POST)
-	public Map<String, Object> queryFromFootprint(@RequestBody Footprint footprint) {
-		System.out.println("进入查询足迹 queryFromFootprint");
-		System.out.println(footprint.toString());
+	@RequestMapping(value = "/query/getMessageList/{uid}", method = RequestMethod.GET)
+	public Map<String, Object> getMessageListByUid(@PathVariable("uid") String uid) {
 		int resultCode = 200;
 		String resultMessage = "接口调用正常返回";
+		List<Map<String, Object>> arrayList = commentMapper.getMessageListByUid(uid);
 
-		Map<String, Integer> cityMap = new HashMap<String, Integer>();
-		Map<String, Integer> provinceMap = new HashMap<String, Integer>();
-		Map<String, Integer> countryMap = new HashMap<String, Integer>();
-
-		List<Footprint> footPrintList = footprintMapper.findAllFootprintByUID(footprint.getUid());
-
-		if (footPrintList == null || footPrintList.size() == 0) {
-
+		if (arrayList == null || arrayList.isEmpty()) {
 			resultCode = 210;
 			resultMessage = "未查询到符合条件的数据";
-		} else {
-			for (Footprint obj : footPrintList) {
-
-				if (cityMap.containsKey(obj.getCity())) {// 判断是否已经有该数值，如有，则将次数加1
-					cityMap.put(obj.getCity(), cityMap.get(obj.getCity()).intValue() + 1);
-				} else {
-					cityMap.put(obj.getCity(), 1);
-				}
-
-				if (provinceMap.containsKey(obj.getProvince())) {// 判断是否已经有该数值，如有，则将次数加1
-					provinceMap.put(obj.getProvince(), provinceMap.get(obj.getProvince()).intValue() + 1);
-				} else {
-					provinceMap.put(obj.getProvince(), 1);
-				}
-
-				if (countryMap.containsKey(obj.getCountry())) {// 判断是否已经有该数值，如有，则将次数加1
-					countryMap.put(obj.getCountry(), countryMap.get(obj.getCountry()).intValue() + 1);
-				} else {
-					countryMap.put(obj.getCountry(), 1);
-				}
-			}
 		}
-
-		System.out.println("进入查询足迹 queryFromFootprint done,result= " + resultCode);
-
-		System.out.println("进入查询足迹 queryFromFootprint done,cityCount= " + cityMap.size());
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("resultCode", resultCode);
 		map.put("resultMessage", resultMessage);
-		map.put("cityCount", cityMap.size());//
-		map.put("provinceCount", provinceMap.size());// 省份足迹数
-		map.put("countryCount", countryMap.size());// 国家足迹数
-		map.put("defeatClientNum", "84.9");// 百分比
-		map.put("value", footPrintList);
+		map.put("value", arrayList);
 		return map;
-	}*/
-	
+	}
+
+	/**
+	 * 根据消息ID更新状态
+	 * 
+	 * @param coordinates
+	 * @return
+	 */
+	@RequestMapping(value = "/updateMessageStatus/{id}", method = RequestMethod.POST)
+	public Map<String, Object> updateMessageStatusById(@PathVariable("id") String id) {
+		int resultCode = 200;
+		String resultMessage = "接口调用正常返回";
+		try {
+			commentMapper.updateMessageStatusById(id);
+		} catch (Exception e) {
+			resultCode = 500;
+			resultMessage = "更新异常";
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("resultCode", resultCode);
+		map.put("resultMessage", resultMessage);		
+		return map;
+	}
+
 }

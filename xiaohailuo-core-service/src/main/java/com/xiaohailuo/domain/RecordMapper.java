@@ -26,7 +26,7 @@ public interface RecordMapper {
 	List<Record> findAllRecordByLnglat(@Param("lat") BigDecimal lat, @Param("lng") BigDecimal lng);
 	
 	 
-	@Select("SELECT t.uid,t.id as recordID,t.title,t.icon,t.recordFile,u.nickname,t.duration,u.profilephoto,t.description,t.replyCount,t.likeCount,t.date  FROM record t,user u WHERE  t.lng =#{lng} AND t.lat =#{lat} and t.uid=u.id GROUP BY t.lng,t.lat")
+	@Select("SELECT t.uid,t.id as recordID,t.title,t.icon,t.recordFile,u.nickname,t.duration,u.profilephoto,t.description,t.replyCount,t.likeCount,t.date  FROM record t,user u WHERE  t.lng =#{lng} AND t.lat =#{lat} and t.uid=u.id  order by t.replyCount desc")
 	@Results({
 			@Result(property = "uid", column = "uid", javaType = String.class, jdbcType = JdbcType.VARCHAR),
 			@Result(property = "recordID", column = "recordID", javaType = String.class, jdbcType = JdbcType.VARCHAR),
@@ -84,6 +84,18 @@ public interface RecordMapper {
 	
 	@Update("UPDATE record SET replyCount=replyCount + 1 WHERE id=#{id}")
 	int updateReplyCount(@Param("id") String id);	
+	
+	/**
+	 * 添加消息接口
+	 * @param recordId 被评论的录音ID
+	 * @param uid 被评论的用户ID
+	 * @param replyUid 评论或点赞人的用户ID
+	 * @param type 消息类型，1-评论；2-点赞；
+	 * @param content 评论内容
+	 * @return
+	 */
+	@Update("insert into message(recordId,uid,replyuid,type,content,createDate) values(#{recordId},#{uid},#{replyUid},#{type},#{content},now())")
+	int addMessage(@Param("recordId") String recordId,@Param("uid") String uid,@Param("replyUid") String replyUid,@Param("type") String type,@Param("content") String content);	
 	
 	// @Select("SELECT * FROM USER WHERE NAME = #{name}")
 	// User findByName(@Param("name") String name);
