@@ -158,6 +158,13 @@
 		<!-- <dependency> <groupId>jave-1.0.2</groupId> <artifactId>jave</artifactId> 
 			<version>1.0.2</version> <scope>system</scope> <systemPath>${project.basedir}/src/main/resources/lib/jave-1.0.2.jar</systemPath> 
 			</dependency> -->
+		<dependency>
+			<groupId>jaudiotagger-2.2.6-SNAPSHOT</groupId>
+			<artifactId>jaudiotagger</artifactId>
+			<version>2.2.6</version>
+			<systemPath>${project.basedir}/src/main/resources/lib/jaudiotagger-2.2.6-SNAPSHOT.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
 	</dependencies>
 
 	<!-- SpringBoot Cloud Begin -->
