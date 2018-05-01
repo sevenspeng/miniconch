@@ -53,6 +53,12 @@ public interface UserMapper {
     
     @Select("select count(*) from footprint where uid=#{uid}")
     int getFootprintNumByUid(String uid);
+    
+    
+    @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},gender=#{sex},profilephoto=#{headimgurl} WHERE id=#{openid}")
+    int updateWXuserinfo(WXuserinfo user);
+    @Insert("INSERT INTO user(id, nickname, profilephoto, country,province,city,gender,subscribetime) VALUES(#{openid}, #{nickname}, #{headimgurl}, #{country}, #{province}, #{city}, #{sex},now())")
+    void addUser(WXuserinfo wxuserinfo);
 
     /*@Results({
             @Result(property = "name", column = "name"),
