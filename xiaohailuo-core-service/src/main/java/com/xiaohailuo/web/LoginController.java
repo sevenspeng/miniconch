@@ -1,5 +1,6 @@
 package com.xiaohailuo.web;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +27,11 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public Map<String, Object> login(HttpServletRequest request, HttpServletResponse response) {
 		// 接口文档https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842
+		// https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxb2c12f0f855920ea&redirect_uri=http%3a%2f%2fduxitao.iok.la%2fweixin%2flogin&response_type=code&scope=snsapi_userinfo&state=http%3a%2f%2fwww.miniconch.cn%2fxiaohailuoWeb%2findex.html#wechat_redirect
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			String code = request.getParameter("code");
-			// String state = request.getParameter("state");
+			String state = request.getParameter("state");
 			// 第二步：通过code换取网页授权access_token
 			WXToken wxToken = WxMpUtil.getAccessToken(code);
 			// 第三步：刷新access_token（如果需要）
@@ -47,6 +49,8 @@ public class LoginController {
 			map.put("resultCode", SystemConst.SUCCESS);
 			map.put("resultMessage", SystemConst.SUCCESS_MESSAGE);
 			map.put("uid", wxuserinfo.getOpenid());
+			String url = URLDecoder.decode(state, "utf-8") + "?uid=" + wxuserinfo.getOpenid();
+			response.sendRedirect(url);
 
 		} catch (Exception e) {
 			map.put("resultCode", SystemConst.ERROR);

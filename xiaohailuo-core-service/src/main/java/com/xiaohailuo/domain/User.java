@@ -21,6 +21,13 @@ public class User {
 	private String city;
 	private String personnotes;
 	private String lastupdatetime;
+	private Integer mycoin;
+	public Integer getMycoin() {
+		return mycoin;
+	}
+	public void setMycoin(Integer mycoin) {
+		this.mycoin = mycoin;
+	}
 	public String getId() {
 		return id;
 	}

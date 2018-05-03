@@ -30,12 +30,33 @@ public interface UserMapper {
     })
     User findByNameAndPassword(@Param("name") String name,@Param("password") String password);
     
+    @Select("SELECT * FROM user WHERE uid = #{uid}")
+    @Results({
+    	@Result(id = true, property = "id", column = "id"),
+        @Result(property = "whatisup", column = "what's up")
+    })
+    User findByuid(@Param("uid") String uid);
+    
     @Select("SELECT * FROM user where id=#{id} ")
     @Results({
     	@Result(id = true, property = "id", column = "id"),
         @Result(property = "whatisup", column = "what's up")
     })
     User findById(@Param("id") String id);
+    
+    
+	@Update("UPDATE user SET mycoin= mycoin + 1 WHERE id=#{uid}")
+    @Results({
+       @Result(property = "uid", column = "id")
+    })
+	int updateMycoinSendComment(@Param("uid") String uid);
+	
+
+	@Update("UPDATE user SET mycoin= mycoin + 5 WHERE id=#{uid}")
+    @Results({
+        @Result(property = "uid", column = "id")
+     })
+	int updateMycoinSendRecord(@Param("uid") String uid);
     
     @Insert("INSERT INTO user(id, name, nickname, profilephoto, subscribetime,password) VALUES(#{id}, #{name}, #{nickname}, #{profilephoto}, sysdate(),#{password})")
     int insert(@Param("id") String id, @Param("name") String name,@Param("nickname") String nickname, @Param("profilephoto") String profilephoto,@Param("password") String password);
@@ -53,32 +74,9 @@ public interface UserMapper {
     
     @Select("select count(*) from footprint where uid=#{uid}")
     int getFootprintNumByUid(String uid);
-    
-    
+
     @Update("UPDATE user SET nickname=#{nickname},country=#{country},province=#{province},city=#{city},gender=#{sex},profilephoto=#{headimgurl} WHERE id=#{openid}")
     int updateWXuserinfo(WXuserinfo user);
     @Insert("INSERT INTO user(id, nickname, profilephoto, country,province,city,gender,subscribetime) VALUES(#{openid}, #{nickname}, #{headimgurl}, #{country}, #{province}, #{city}, #{sex},now())")
     void addUser(WXuserinfo wxuserinfo);
-
-    /*@Results({
-            @Result(property = "name", column = "name"),
-            @Result(property = "age", column = "age")
-    })
-    @Select("SELECT name, age FROM user")
-    List<User> findAll();
-
-    @Insert("INSERT INTO USER_TEST(name, age) VALUES(#{name}, #{age})")
-    int insert(@Param("name") String name, @Param("age") Integer age);
-
-    @Update("UPDATE USER_TEST SET age=#{age} WHERE name=#{name}")
-    void update(User user);
-
-    @Delete("DELETE FROM USER_TEST WHERE id =#{id}")
-    void delete(Long id);
-
-    @Insert("INSERT INTO USER_TEST(name, age) VALUES(#{name}, #{age})")
-    int insertByUser(User user);
-
-    @Insert("INSERT INTO USER_TEST(name, age) VALUES(#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER})")
-    int insertByMap(Map<String, Object> map);*/
 }

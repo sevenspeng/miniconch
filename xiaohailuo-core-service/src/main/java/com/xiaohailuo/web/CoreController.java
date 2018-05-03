@@ -90,6 +90,7 @@ public class CoreController extends BaseController {
 	@Autowired
 	private FootprintMapper footprintMapper;
 
+
 	// status
 	// Map<String, Integer> statusMachine = new
 	// ConcurrentHashMap<String,Integer>();
@@ -230,6 +231,11 @@ public class CoreController extends BaseController {
 			String id = (String) comment.getRecordId();
 			int resultUpdate = recordMapper.updateReplyCount(id);
 			log.info("updateReplyCount result---->" + resultUpdate);
+			// 更新我的金币
+			String uid = (String)comment.getReplyUid();
+			int resultUpdateMycoin = userMapper.updateMycoinSendComment(uid);
+			log.info("updateMycoinSendComment result---->" + resultUpdateMycoin);
+			
 			resultUpdate = recordMapper.addMessage(comment.getRecordId(), comment.getUid(), comment.getReplyUid(), "1",
 					comment.getComment());
 			log.info("addMessage result---->" + resultUpdate);
@@ -461,7 +467,7 @@ public class CoreController extends BaseController {
 		try {
 			User user = userMapper.findByNameAndPassword(requestMap.get("mobile"), requestMap.get("password"));
 			if (user != null) {
-				Map<String, String> subMap = new HashMap<String, String>();
+				Map<String, Object> subMap = new HashMap<String, Object>();
 				subMap.put("uid", user.getId());// id 主键信息
 				subMap.put("name", user.getName() == null ? "" : user.getName());// 姓名
 				subMap.put("nickname", user.getNickname() == null ? "" : user.getNickname());// 昵称
@@ -472,8 +478,50 @@ public class CoreController extends BaseController {
 				subMap.put("signature", user.getSignature() == null ? "" : user.getSignature());// 个性签名
 				// 查询足迹量
 				subMap.put("myfootprint", String.valueOf(userMapper.getFootprintNumByUid(user.getId())));
-				// 查询金币量
-				subMap.put("myCoin", "0");
+				// 查询金币量 byzhangpeng 20180501
+				subMap.put("mycoin", user.getMycoin());//金币
+				map.put("value", subMap);
+			} else {
+				resultMessage = "手机未注册或密码错误！";
+				resultCode = 550;
+			}
+		} catch (Exception e) {
+			resultMessage = "服务器异常！";
+			resultCode = 500;
+			log.error("login error:", e);
+		}
+		map.put("resultCode", resultCode);
+		map.put("resultMessage", resultMessage);
+		log.info(requestMap.get("mobile") + "login response:" + map.toString());
+		return map;
+	}
+	
+	/**
+	 * 用户登录 request: { "uid": " ots8XwmGYD1kzPA3Ru4SejcxMOdU" }
+	 * 
+	 */
+	@RequestMapping(value = "/login2", method = RequestMethod.POST)
+	public Map<String, Object> login2(@RequestBody Map<String, String> requestMap) throws Exception {
+		log.info("request login:" + requestMap.toString());
+		int resultCode = 200;
+		String resultMessage = "登陆成功！";
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			User user = userMapper.findByuid(requestMap.get("uid"));
+			if (user != null) {
+				Map<String, Object> subMap = new HashMap<String, Object>();
+				subMap.put("uid", user.getId());// id 主键信息
+				subMap.put("name", user.getName() == null ? "" : user.getName());// 姓名
+				subMap.put("nickname", user.getNickname() == null ? "" : user.getNickname());// 昵称
+				subMap.put("profilephoto", user.getProfilephoto() == null ? "" : user.getProfilephoto());// 头像
+				subMap.put("subscribetime", user.getSubscribetime());// 注册时间
+				subMap.put("gender", user.getGender() == null ? "" : user.getGender());// 性别
+				subMap.put("city", user.getCity() == null ? "" : user.getCity());// 城市
+				subMap.put("signature", user.getSignature() == null ? "" : user.getSignature());// 个性签名
+				// 查询足迹量
+				subMap.put("myfootprint", String.valueOf(userMapper.getFootprintNumByUid(user.getId())));
+				// 查询金币量 byzhangpeng 20180501
+				subMap.put("mycoin", user.getMycoin());//金币
 				map.put("value", subMap);
 			} else {
 				resultMessage = "手机未注册或密码错误！";
@@ -617,6 +665,8 @@ public class CoreController extends BaseController {
 
 		byte[] bs = Base64ImgEncodeAndDecode.ImgDecode(imgData);
 		System.out.println("bs = " + bs);
+		
+		
 
 		// 上传图片
 		int ret = UploadOss.UploadByte("miniconch", (String) requestMap.get("recordId") + imgSuffix, bs);
@@ -652,7 +702,12 @@ public class CoreController extends BaseController {
 		Map<String, String> subMap = new HashMap<String, String>();
 
 		subMap.put("filepath", "/file/record" + "/" + requestMap.get("recordId"));
-		System.out.println("subMap: " + subMap);
+		System.out.println("subMap: " + subMap);		
+
+		// 更新我的金币
+		int resultUpdateMycoin = userMapper.updateMycoinSendRecord(uid);
+		log.info("updateMycoinSendRecord result---->" + resultUpdateMycoin);
+		
 
 		map.put("resultCode", resultCode);
 		map.put("resultMessage", resultMessage);
