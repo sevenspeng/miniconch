@@ -507,7 +507,7 @@ public class CoreController extends BaseController {
 		String resultMessage = "登陆成功！";
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			User user = userMapper.findByuid(requestMap.get("uid"));
+			User user = userMapper.findById(requestMap.get("uid"));
 			if (user != null) {
 				Map<String, Object> subMap = new HashMap<String, Object>();
 				subMap.put("uid", user.getId());// id 主键信息
