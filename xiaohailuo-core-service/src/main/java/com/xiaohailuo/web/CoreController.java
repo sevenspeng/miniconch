@@ -827,9 +827,17 @@ public class CoreController extends BaseController {
 			List<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
 			for (int i = 0; i < list.size(); i++) {
 				HashMap<String, String> item = new HashMap<String, String>();
-				item.put("uid", list.get(i).getUid());
-				item.put("lat", list.get(i).getLat().toPlainString());
-				item.put("lng", list.get(i).getLng().toPlainString());
+				item.put("uid", list.get(i).getUid());			
+				if(list.get(i).getLat()==null||"".equals(list.get(i).getLat().toPlainString())){
+					item.put("lat", "0.00");
+				}else {					
+					item.put("lat", list.get(i).getLat().toPlainString());
+				}
+				if(list.get(i).getLng()==null|| "".equals(list.get(i).getLng().toPlainString())){
+					item.put("lng", "0.00");
+				}else {					
+					item.put("lng", list.get(i).getLng().toPlainString());
+				}
 				item.put("city", list.get(i).getCity());
 				item.put("province", list.get(i).getProvince());
 				item.put("country", list.get(i).getCountry());

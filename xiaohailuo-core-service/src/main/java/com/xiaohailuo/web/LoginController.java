@@ -27,7 +27,7 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public Map<String, Object> login(HttpServletRequest request, HttpServletResponse response) {
 		// 接口文档https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842
-		// https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxb2c12f0f855920ea&redirect_uri=http%3a%2f%2fduxitao.iok.la%2fweixin%2flogin&response_type=code&scope=snsapi_userinfo&state=http%3a%2f%2fwww.miniconch.cn%2fxiaohailuoWeb%2findex.html#wechat_redirect
+		// https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxb2c12f0f855920ea&redirect_uri=http%3a%2f%2fwww.miniconch.cn%2fxiaohailuo%2fweixin%2flogin&response_type=code&scope=snsapi_userinfo&state=http%3a%2f%2fwww.miniconch.cn%2fxiaohailuoWeb%2findex.html#wechat_redirect
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			String code = request.getParameter("code");
